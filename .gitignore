@@ -1,0 +1,20 @@
+# Build output
+dist/
+dist-ssr/
+
+# Dependencies
+node_modules/
+backend/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Vite cache
+.vite/
