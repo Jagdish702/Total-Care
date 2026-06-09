@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* SubscriptionSection gradient */
+.subscription-section-bg {
+  background: radial-gradient(ellipse at 50% 50%, #e8f1f8 0%, #ffffff 100%);
+}
+
+/* MobileAppDownloadSection gradients */
+.app-download-outer-bg {
+  background: radial-gradient(ellipse at 50% 50%, #ffffff 36.6%, #ebf8f3 100%);
+}
+
+.app-download-card-bg {
+  background: radial-gradient(
+    ellipse 55% 140% at 22% 42%,
+    #30956a 0%,
+    #247050 25%,
+    #184b35 45%,
+    #0c251b 60%,
+    #000000 78%
+  );
+}
+
+/* OTP shake animation (error state) */
+@keyframes otp-shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+.otp-shake {
+  animation: otp-shake 0.45s ease-in-out;
+}
+
+/* Hero card staggered pop-in (desktop) */
+@keyframes cardPopIn {
+  0%   { opacity: 0; transform: scale(0.72) translateY(18px); }
+  60%  { opacity: 0.9; transform: scale(1.05) translateY(-5px); }
+  100% { opacity: 0.8; transform: scale(1) translateY(0); }
+}
+
+/* Mobile hero cards — slide up from below (bottom → top reveal) */
+@keyframes mobileCardSlideUp {
+  0%   { opacity: 0; transform: translateY(32px); }
+  65%  { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* StatusCard entrance animation */
+@keyframes fade-slide-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-slide-in {
+  animation: fade-slide-in 0.25s ease-out forwards;
+}

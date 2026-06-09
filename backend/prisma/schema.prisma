@@ -1,0 +1,701 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// PRODUCT CLUSTER
+// ─────────────────────────────────────────────
+
+model Product {
+  id            String   @id
+  name          String
+  subtitle      String?
+  description   String?
+  price         Int
+  originalPrice Int      @map("original_price")
+  // discount_pct is computed: Math.round((originalPrice - price) / originalPrice * 100)
+  rating        Float    @default(0)
+  reviewCount   Int      @default(0) @map("review_count")
+  featuresTitle String?  @map("features_title")
+  productType   String   @map("product_type") // 'individual' | 'bundle'
+  isActive      Boolean  @default(true) @map("is_active")
+  displayOrder  Int      @default(0) @map("display_order")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  features               ProductFeature[]
+  images                 ProductImage[]
+  bundleItems            ProductBundleItem[]     @relation("BundleProduct")
+  componentOf            ProductBundleItem[]     @relation("ComponentProduct")
+  concernRecommendations ConcernRecommendation[]
+  detailTabs             ProductDetailTab[]
+  testimonials           Testimonial[]
+  statusCards            StatusCard[]            @relation("LinkedProduct")
+  orderItems             OrderItem[]
+
+  @@index([productType])
+  @@index([isActive])
+  @@index([displayOrder])
+  @@map("products")
+}
+
+model ProductFeature {
+  id           Int    @id @default(autoincrement())
+  productId    String @map("product_id")
+  featureText  String @map("feature_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_features")
+}
+
+model ProductImage {
+  id           Int     @id @default(autoincrement())
+  productId    String  @map("product_id")
+  imageUrl     String  @map("image_url")
+  altText      String? @map("alt_text")
+  isPrimary    Boolean @default(false) @map("is_primary")
+  displayOrder Int     @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId])
+  @@index([productId, isPrimary])
+  @@map("product_images")
+}
+
+model ProductBundleItem {
+  id           Int    @id @default(autoincrement())
+  bundleId     String @map("bundle_id")
+  componentId  String @map("component_id")
+  displayOrder Int    @default(0) @map("display_order")
+
+  bundle    Product @relation("BundleProduct", fields: [bundleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  component Product @relation("ComponentProduct", fields: [componentId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([bundleId, componentId])
+  @@index([bundleId])
+  @@index([componentId])
+  @@map("product_bundle_items")
+}
+
+// ─────────────────────────────────────────────
+// HEALTH CONCERN CLUSTER
+// ─────────────────────────────────────────────
+
+model HealthConcern {
+  id           String  @id
+  label        String
+  description  String?
+  iconName     String? @map("icon_name")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  recommendations  ConcernRecommendation[]
+  descriptionParts ConcernDescriptionPart[]
+
+  @@index([isActive, displayOrder])
+  @@map("health_concerns")
+}
+
+model ConcernRecommendation {
+  id           Int    @id @default(autoincrement())
+  concernId    String @map("concern_id")
+  productId    String @map("product_id")
+  displayOrder Int    @default(0) @map("display_order")
+
+  concern HealthConcern @relation(fields: [concernId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product       @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([concernId, productId])
+  @@index([concernId])
+  @@index([productId])
+  @@map("concern_recommendations")
+}
+
+model ConcernDescriptionPart {
+  id            Int     @id @default(autoincrement())
+  concernId     String  @map("concern_id")
+  partText      String  @map("part_text")
+  isHighlighted Boolean @default(false) @map("is_highlighted")
+  displayOrder  Int     @default(0) @map("display_order")
+
+  concern HealthConcern @relation(fields: [concernId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([concernId, displayOrder])
+  @@map("concern_description_parts")
+}
+
+// ─────────────────────────────────────────────
+// SUBSCRIPTION CLUSTER
+// ─────────────────────────────────────────────
+
+model SubscriptionPlan {
+  id              String   @id
+  title           String
+  planType        String   @map("plan_type") // 'monthly' | 'quarterly' | 'yearly'
+  originalPrice   Int      @map("original_price")
+  discountedPrice Int      @map("discounted_price")
+  pricePeriod     String   @map("price_period") // 'month' | 'year'
+  currency        String   @default("INR")
+  subtitle        String?
+  titleColor      String?  @map("title_color")
+  ctaText         String?  @map("cta_text")
+  isActive        Boolean  @default(true) @map("is_active")
+  isFeatured      Boolean  @default(false) @map("is_featured")
+  displayOrder    Int      @default(0) @map("display_order")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  descriptionLines  SubscriptionDescriptionLine[]
+  planFeatures      SubscriptionPlanFeature[]
+  priceBreakdowns   SubscriptionPriceBreakdown[]
+  savings           SubscriptionSaving[]
+  billingInfo       SubscriptionBillingInfo[]
+  userSubscriptions UserSubscription[]
+  orderItems        OrderItem[]
+
+  @@index([isActive, displayOrder])
+  @@map("subscription_plans")
+}
+
+model SubscriptionDescriptionLine {
+  id           Int    @id @default(autoincrement())
+  planId       String @map("plan_id")
+  lineText     String @map("line_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([planId, displayOrder])
+  @@map("subscription_description_lines")
+}
+
+model SubscriptionFeature {
+  id           Int     @id @default(autoincrement())
+  featureText  String  @map("feature_text")
+  iconName     String? @map("icon_name")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  planFeatures SubscriptionPlanFeature[]
+
+  @@index([isActive, displayOrder])
+  @@map("subscription_features")
+}
+
+model SubscriptionPlanFeature {
+  planId    String @map("plan_id")
+  featureId Int    @map("feature_id")
+
+  plan    SubscriptionPlan    @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  feature SubscriptionFeature @relation(fields: [featureId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([planId, featureId])
+  @@index([featureId])
+  @@map("subscription_plan_features")
+}
+
+model SubscriptionPriceBreakdown {
+  id                Int     @id @default(autoincrement())
+  planId            String  @map("plan_id")
+  label             String
+  originalDisplay   String? @map("original_display")
+  discountedDisplay String? @map("discounted_display")
+  displayOrder      Int     @default(0) @map("display_order")
+
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([planId, displayOrder])
+  @@map("subscription_price_breakdowns")
+}
+
+model SubscriptionSaving {
+  id           Int    @id @default(autoincrement())
+  planId       String @map("plan_id")
+  label        String
+  valueText    String @map("value_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([planId, displayOrder])
+  @@map("subscription_savings")
+}
+
+model SubscriptionBillingInfo {
+  id           Int    @id @default(autoincrement())
+  planId       String @map("plan_id")
+  infoText     String @map("info_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([planId, displayOrder])
+  @@map("subscription_billing_info")
+}
+
+// ─────────────────────────────────────────────
+// CARE SERVICES CLUSTER
+// ─────────────────────────────────────────────
+
+model CareService {
+  id                 String  @id
+  label              String
+  headline           String
+  accentText         String? @map("accent_text")
+  iconName           String? @map("icon_name")
+  expandedPanelTop   Int?    @map("expanded_panel_top")
+  expandedBulletsTop Int?    @map("expanded_bullets_top")
+  displayOrder       Int     @default(0) @map("display_order")
+  isActive           Boolean @default(true) @map("is_active")
+
+  features       ServiceFeature[]
+  testimonials   Testimonial[]
+  highlightCards HighlightCard[]
+  statusCards    StatusCard[] @relation("LinkedService")
+
+  @@index([isActive, displayOrder])
+  @@map("care_services")
+}
+
+model ServiceFeature {
+  id           Int    @id @default(autoincrement())
+  serviceId    String @map("service_id")
+  featureText  String @map("feature_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  service CareService @relation(fields: [serviceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([serviceId, displayOrder])
+  @@map("service_features")
+}
+
+model Testimonial {
+  id           Int      @id @default(autoincrement())
+  personName   String   @map("person_name")
+  badgeText    String?  @map("badge_text")
+  quote        String
+  photoUrl     String?  @map("photo_url")
+  serviceId    String?  @map("service_id")
+  productId    String?  @map("product_id")
+  context      String   @default("general")
+  isFeatured   Boolean  @default(false) @map("is_featured")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  service CareService? @relation(fields: [serviceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  product Product?     @relation(fields: [productId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([serviceId, displayOrder])
+  @@index([productId, displayOrder])
+  @@index([isFeatured, isActive])
+  @@map("testimonials")
+}
+
+// ─────────────────────────────────────────────
+// FAQ CLUSTER
+// ─────────────────────────────────────────────
+
+model FaqCategory {
+  id           Int    @id @default(autoincrement())
+  name         String
+  slug         String @unique
+  displayOrder Int    @default(0) @map("display_order")
+
+  faqs Faq[]
+
+  @@map("faq_categories")
+}
+
+model Faq {
+  id           Int      @id @default(autoincrement())
+  question     String
+  answerType   String   @map("answer_type") // 'text' | 'list' | 'steps'
+  answerText   String?  @map("answer_text")
+  categoryId   Int?     @map("category_id")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  category  FaqCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  listItems FaqListItem[]
+  steps     FaqStep[]
+
+  @@index([categoryId, displayOrder])
+  @@index([isActive, displayOrder])
+  @@map("faqs")
+}
+
+model FaqListItem {
+  id           Int    @id @default(autoincrement())
+  faqId        Int    @map("faq_id")
+  itemText     String @map("item_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  faq Faq @relation(fields: [faqId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([faqId, displayOrder])
+  @@map("faq_list_items")
+}
+
+model FaqStep {
+  id           Int    @id @default(autoincrement())
+  faqId        Int    @map("faq_id")
+  stepTitle    String @map("step_title")
+  displayOrder Int    @default(0) @map("display_order")
+
+  faq   Faq           @relation(fields: [faqId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  items FaqStepItem[]
+
+  @@index([faqId, displayOrder])
+  @@map("faq_steps")
+}
+
+model FaqStepItem {
+  id           Int    @id @default(autoincrement())
+  stepId       Int    @map("step_id")
+  itemText     String @map("item_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  step FaqStep @relation(fields: [stepId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([stepId, displayOrder])
+  @@map("faq_step_items")
+}
+
+// ─────────────────────────────────────────────
+// UI CONFIG CLUSTER
+// ─────────────────────────────────────────────
+
+model HighlightCard {
+  id           Int     @id @default(autoincrement())
+  label        String
+  serviceId    String? @map("service_id")
+  overlayType  String? @map("overlay_type")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  service CareService? @relation(fields: [serviceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@index([isActive, displayOrder])
+  @@map("highlight_cards")
+}
+
+model Health360Frame {
+  id           Int     @id @default(autoincrement())
+  titleLines   String  @map("title_lines") // JSON string array
+  bodyText     String  @map("body_text")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  bullets Health360FrameBullet[]
+
+  @@index([isActive, displayOrder])
+  @@map("health360_frames")
+}
+
+model Health360FrameBullet {
+  id           Int    @id @default(autoincrement())
+  frameId      Int    @map("frame_id")
+  bulletText   String @map("bullet_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  frame Health360Frame @relation(fields: [frameId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([frameId, displayOrder])
+  @@map("health360_frame_bullets")
+}
+
+model ProductDetailTab {
+  id                 String  @id
+  productId          String  @map("product_id")
+  tabLabel           String  @map("tab_label")
+  vitalsLayout       String  @default("list") @map("vitals_layout") // 'grid' | 'list'
+  latestReadingLabel String? @map("latest_reading_label")
+  displayOrder       Int     @default(0) @map("display_order")
+  isActive           Boolean @default(true) @map("is_active")
+
+  product Product               @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vitals  ProductDetailVital[]
+  insight ProductDetailInsight?
+
+  @@index([productId, displayOrder])
+  @@map("product_detail_tabs")
+}
+
+model ProductDetailVital {
+  id           Int     @id @default(autoincrement())
+  tabId        String  @map("tab_id")
+  iconName     String? @map("icon_name")
+  label        String
+  value        String
+  unit         String?
+  value2       String?
+  unit2        String?
+  displayOrder Int     @default(0) @map("display_order")
+
+  tab ProductDetailTab @relation(fields: [tabId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tabId, displayOrder])
+  @@map("product_detail_vitals")
+}
+
+model ProductDetailInsight {
+  id             Int     @id @default(autoincrement())
+  tabId          String  @unique @map("tab_id")
+  iconName       String? @map("icon_name")
+  label          String
+  insightType    String  @map("insight_type") // 'paragraph' | 'metric'
+  insightText    String? @map("insight_text")
+  highlightValue String? @map("highlight_value")
+
+  tab ProductDetailTab @relation(fields: [tabId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("product_detail_insights")
+}
+
+model ProductShowcaseBullet {
+  id           Int     @id @default(autoincrement())
+  bulletText   String  @map("bullet_text")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  @@map("product_showcase_bullets")
+}
+
+model FooterSection {
+  id           Int     @id @default(autoincrement())
+  heading      String
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  links FooterLink[]
+
+  @@map("footer_sections")
+}
+
+model FooterLink {
+  id           Int     @id @default(autoincrement())
+  sectionId    Int     @map("section_id")
+  label        String
+  url          String
+  opensNewTab  Boolean @default(false) @map("opens_new_tab")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  section FooterSection @relation(fields: [sectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([sectionId, displayOrder])
+  @@map("footer_links")
+}
+
+model NavItem {
+  id           Int      @id @default(autoincrement())
+  label        String
+  url          String?
+  parentId     Int?     @map("parent_id")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+
+  parent   NavItem?  @relation("NavTree", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  children NavItem[] @relation("NavTree")
+
+  @@index([parentId, displayOrder])
+  @@index([isActive, displayOrder])
+  @@map("nav_items")
+}
+
+model SiteConfig {
+  id          Int      @id @default(autoincrement())
+  configKey   String   @unique @map("config_key")
+  configValue String   @map("config_value")
+  configGroup String   @default("general") @map("config_group")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([configGroup])
+  @@map("site_config")
+}
+
+// ─────────────────────────────────────────────
+// TRANSACTIONAL CLUSTER
+// ─────────────────────────────────────────────
+
+model User {
+  id           Int      @id @default(autoincrement())
+  fullName     String   @map("full_name")
+  email        String?  @unique
+  phone        String?
+  passwordHash String?  @map("password_hash")
+  role         String   @default("customer") // 'customer' | 'admin' | 'doctor'
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  subscriptions UserSubscription[]
+  orders        Order[]
+
+  @@index([role, isActive])
+  @@map("users")
+}
+
+model UserSubscription {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  planId    String    @map("plan_id")
+  status    String    @default("active") // 'active' | 'paused' | 'cancelled' | 'expired'
+  startsAt  DateTime  @map("starts_at")
+  endsAt    DateTime? @map("ends_at")
+  autoRenew Boolean   @default(true) @map("auto_renew")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  user User             @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([userId, status])
+  @@index([planId])
+  @@index([status, endsAt])
+  @@map("user_subscriptions")
+}
+
+model Order {
+  id              Int      @id @default(autoincrement())
+  userId          Int?     @map("user_id")
+  orderNumber     String   @unique @map("order_number")
+  status          String   @default("pending") // 'pending'|'confirmed'|'shipped'|'delivered'|'cancelled'|'refunded'
+  subtotal        Int
+  discount        Int      @default(0)
+  totalAmount     Int      @map("total_amount")
+  currency        String   @default("INR")
+  shippingAddress String?  @map("shipping_address")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user     User?       @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  items    OrderItem[]
+  payments Payment[]
+
+  @@index([userId, status])
+  @@index([orderNumber])
+  @@index([status, createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int     @map("order_id")
+  productId String? @map("product_id")
+  planId    String? @map("plan_id")
+  itemType  String  @map("item_type") // 'product' | 'subscription'
+  quantity  Int     @default(1)
+  unitPrice Int     @map("unit_price")
+  // totalPrice = quantity * unitPrice (computed in service layer)
+
+  order   Order             @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product?          @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  plan    SubscriptionPlan? @relation(fields: [planId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([planId])
+  @@map("order_items")
+}
+
+model StatusCard {
+  id              String   @id
+  title           String
+  description     String?
+  iconName        String?  @map("icon_name")
+  cardType        String   @map("card_type") // 'health'|'device'|'service'|'subscription'|'payment'
+  linkedProductId String?  @map("linked_product_id")
+  linkedServiceId String?  @map("linked_service_id")
+  unit            String?
+  displayOrder    Int      @default(0) @map("display_order")
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  linkedProduct Product?    @relation("LinkedProduct", fields: [linkedProductId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  linkedService CareService? @relation("LinkedService", fields: [linkedServiceId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  levels        StatusCardLevel[]
+  metrics       StatusCardMetric[]
+
+  @@index([cardType, isActive])
+  @@index([displayOrder])
+  @@index([linkedProductId])
+  @@index([linkedServiceId])
+  @@map("status_cards")
+}
+
+model StatusCardLevel {
+  id           Int     @id @default(autoincrement())
+  cardId       String  @map("card_id")
+  levelKey     String  @map("level_key")
+  label        String
+  description  String?
+  colorHex     String  @default("#000000") @map("color_hex")
+  bgColorHex   String  @default("#FFFFFF") @map("bg_color_hex")
+  iconName     String? @map("icon_name")
+  displayOrder Int     @default(0) @map("display_order")
+
+  card StatusCard @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([cardId, levelKey])
+  @@index([cardId, displayOrder])
+  @@index([levelKey])
+  @@map("status_card_levels")
+}
+
+model StatusCardMetric {
+  id           Int     @id @default(autoincrement())
+  cardId       String  @map("card_id")
+  metricKey    String  @map("metric_key")
+  metricLabel  String  @map("metric_label")
+  metricUnit   String? @map("metric_unit")
+  normalMin    Float?  @map("normal_min")
+  normalMax    Float?  @map("normal_max")
+  warningMin   Float?  @map("warning_min")
+  warningMax   Float?  @map("warning_max")
+  criticalMin  Float?  @map("critical_min")
+  criticalMax  Float?  @map("critical_max")
+  displayOrder Int     @default(0) @map("display_order")
+
+  card StatusCard @relation(fields: [cardId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([cardId, metricKey])
+  @@index([cardId, displayOrder])
+  @@map("status_card_metrics")
+}
+
+model Payment {
+  id            Int       @id @default(autoincrement())
+  orderId       Int       @map("order_id")
+  paymentMethod String    @map("payment_method") // 'all'|'debit'|'credit'|'upi'|'wallet'|'netbanking'|'cod'
+  transactionId String?   @unique @map("transaction_id")
+  gatewayRef    String?   @map("gateway_ref")
+  amount        Int
+  currency      String    @default("INR")
+  status        String    @default("pending") // 'pending'|'processing'|'successful'|'failed'|'refunded'|'cancelled'|'timeout'
+  failureReason String?   @map("failure_reason")
+  initiatedAt   DateTime  @default(now()) @map("initiated_at")
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([orderId])
+  @@index([status, initiatedAt])
+  @@index([paymentMethod, status])
+  @@map("payments")
+}
