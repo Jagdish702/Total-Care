@@ -18,11 +18,12 @@ const PURPLE_GRADIENT        = 'linear-gradient(118.61deg, #B189FF 0%, #2E008B 9
 const inrStr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
 function toCardItem(product) {
-  const assets = PRODUCT_CARD_ASSETS[product.id] ?? {};
+  const assets       = PRODUCT_CARD_ASSETS[product.id] ?? {};
+  const apiCardImage = (product.images ?? []).find(img => img.imageType === 'card')?.imageUrl ?? null;
   return {
     id:            product.id,
-    bgImage:       assets.bgImage ?? null,
-    icon:          assets.icon ?? null,
+    bgImage:       apiCardImage ?? assets.bgImage ?? null,  // GCP first, static fallback
+    icon:          assets.icon ?? null,                     // icons remain static SVGs
     productName:   product.subtitle ?? product.name,
     title:         product.name,
     mrp:           inrStr(product.originalPrice),

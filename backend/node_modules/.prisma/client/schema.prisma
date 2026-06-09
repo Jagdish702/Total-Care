@@ -60,6 +60,7 @@ model ProductImage {
   id           Int     @id @default(autoincrement())
   productId    String  @map("product_id")
   imageUrl     String  @map("image_url")
+  imageType    String  @default("gallery") @map("image_type") // 'card' | 'hero' | 'bundle_component' | 'gallery'
   altText      String? @map("alt_text")
   isPrimary    Boolean @default(false) @map("is_primary")
   displayOrder Int     @default(0) @map("display_order")

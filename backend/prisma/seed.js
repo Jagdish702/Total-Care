@@ -477,6 +477,45 @@ async function main() {
   }
   console.log('  ✓ Site config');
 
+  // ─── Product Images (GCP URLs) ──────────────────
+  // Replace each imageUrl value below with your actual GCP Cloud Storage link.
+  // imageType values:
+  //   'card'             → background shown on the listing-section card
+  //   'hero'             → large image on the product explore page
+  //   'bundle_component' → thumbnail shown inside the bundle breakdown section
+  await prisma.productImage.deleteMany({});
+  await prisma.productImage.createMany({
+    data: [
+      // ── bp (Blood Pressure Monitor) ──
+      { productId: 'bp', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/bg-bp-monitor.jpg',             altText: 'BP Monitor card image',             displayOrder: 1 },
+      { productId: 'bp', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/Hero_img_1.png',             altText: 'BP Monitor hero image',             displayOrder: 2 },
+      { productId: 'bp', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/YOUR_BUCKET/bp-bundle-component.png', altText: 'BP Monitor bundle thumbnail',        displayOrder: 3 },
+
+      // ── glucose (Glucose Monitor) ──
+      { productId: 'glucose', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/bg-glucose-monitor.jpg',             altText: 'Glucose Monitor card image',      displayOrder: 1 },
+      { productId: 'glucose', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/Hero_img_1.png',             altText: 'Glucose Monitor hero image',      displayOrder: 2 },
+      { productId: 'glucose', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/YOUR_BUCKET/glucose-bundle-component.png', altText: 'Glucose Monitor bundle thumbnail', displayOrder: 3 },
+
+      // ── scale (Body Composition Scale) ──
+      { productId: 'scale', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/bg-smart-scale.jpg',             altText: 'Smart Scale card image',      displayOrder: 1 },
+      { productId: 'scale', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Hero_img.png',             altText: 'Smart Scale hero image',      displayOrder: 2 },
+      { productId: 'scale', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/YOUR_BUCKET/scale-bundle-component.png', altText: 'Smart Scale bundle thumbnail', displayOrder: 3 },
+
+      // ── complete-essentials (Bundle) ──
+      { productId: 'complete-essentials', imageType: 'card', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/BP_%2B_Scale_%2B_Glucometre_Bundle_Assets/combo-complete.jpg', altText: 'Complete Essentials card image', displayOrder: 1 },
+      { productId: 'complete-essentials', imageType: 'hero', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/BP_%2B_Scale_%2B_Glucometre_Bundle_Assets/Hero_img_1.png', altText: 'Complete Essentials hero image', displayOrder: 2 },
+
+      // ── bp-essentials (Bundle) ──
+      { productId: 'bp-essentials', imageType: 'card', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/BP_%2B_Scale_Bundle_Assets/combo-bp-scale.jpg', altText: 'BP Essentials card image', displayOrder: 1 },
+      { productId: 'bp-essentials', imageType: 'hero', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/BP_%2B_Scale_Bundle_Assets/Hero_img_1.png', altText: 'BP Essentials hero image', displayOrder: 2 },
+
+      // ── diabetes-essentials (Bundle) ──
+      { productId: 'diabetes-essentials', imageType: 'card', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/Glucometre_%2B_Scale_Bundle_Assets/combo-diabetes.jpg', altText: 'Diabetes Essentials card image', displayOrder: 1 },
+      { productId: 'diabetes-essentials', imageType: 'hero', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Bundles%20Assets/Glucometre_%2B_Scale_Bundle_Assets/Hero_img_1.png', altText: 'Diabetes Essentials hero image', displayOrder: 2 },
+    ],
+  });
+  console.log('  ✓ Product images (GCP URLs)');
+
   console.log('\n✅ Database seeded successfully!');
 }
 

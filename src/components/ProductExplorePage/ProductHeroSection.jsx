@@ -269,7 +269,7 @@ function ProductInfo({ product }) {
     });
   };
   const savings = product.originalPrice - product.price;
-  const isCombo = product.devices.length > 1;
+  const isCombo = (product.bundleItems?.length ?? 0) > 1;
 
   return (
     <div className="lg:w-[460px] w-full shrink-0 flex flex-col gap-[60px]">
@@ -290,9 +290,9 @@ function ProductInfo({ product }) {
                      [text-shadow:0px_2px_4px_rgba(0,65,114,0.08)] space-y-0"
           aria-label="Included devices"
         >
-          {product.devices.map((device) => (
-            <li key={device} className="ms-6 mb-0">
-              <span>{device}</span>
+          {product.bundleItems.map((item) => (
+            <li key={item.id} className="ms-6 mb-0">
+              <span>{item.name}</span>
             </li>
           ))}
         </ul>
@@ -303,8 +303,8 @@ function ProductInfo({ product }) {
         <p className="font-bold text-black">{product.featuresTitle}</p>
         <p className="font-light text-black">
           {product.features.map((f, i) => (
-            <span key={i}>
-              {'• '}{f}
+            <span key={f.id ?? i}>
+              {'• '}{f.featureText}
               {i < product.features.length - 1 && <br />}
             </span>
           ))}

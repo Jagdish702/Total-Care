@@ -7,12 +7,9 @@ import meditiveHero  from './product-explore/Weight scale for explore hero page.
 import glucoHero     from './product-explore/RGB GlucoBuddy Glucometer for explore hero page.png';
 
 // ── Listing section card backgrounds (IndividualListingSection) ────────────────
-import bgBpMonitor      from './products/bg-bp-monitor.jpg';
-import bgGlucoseMonitor from './products/bg-glucose-monitor.jpg';
-import bgSmartScale     from './products/bg-smart-scale.jpg';
-import comboBpScaleCard from './products/combo-bp-scale.jpg';
-import comboDiabetesCard from './products/combo-diabetes.jpg';
-import comboCompleteCard from './products/combo-complete.jpg';
+// Card images for bp, glucose, and all combos come from GCP (stored in DB).
+// Only scale has a local fallback; all others fall back to null → GCP URL takes over.
+import bgSmartScale from './products/bg-smart-scale.jpg';
 
 // ── Listing section card icons ─────────────────────────────────────────────────
 import iconWeightMachine from './products/icons/weight machine green.svg';
@@ -59,12 +56,12 @@ export const PRODUCT_HERO_IMAGES = {
  * Maps product ID → { bgImage, icon } for IndividualListingSection cards.
  */
 export const PRODUCT_CARD_ASSETS = {
-  'complete-essentials': { bgImage: comboCompleteCard,  icon: iconShieldTick    },
-  'bp-essentials':       { bgImage: comboBpScaleCard,   icon: iconWeightMachine },
-  'diabetes-essentials': { bgImage: comboDiabetesCard,  icon: iconHeart         },
-  'scale':               { bgImage: bgSmartScale,       icon: iconWeightMachine },
-  'glucose':             { bgImage: bgGlucoseMonitor,   icon: iconWaterDrop     },
-  'bp':                  { bgImage: bgBpMonitor,        icon: iconHeart         },
+  'complete-essentials': { bgImage: null,         icon: iconShieldTick    }, // card image → GCP
+  'bp-essentials':       { bgImage: null,         icon: iconWeightMachine }, // card image → GCP
+  'diabetes-essentials': { bgImage: null,         icon: iconHeart         }, // card image → GCP
+  'scale':               { bgImage: bgSmartScale, icon: iconWeightMachine }, // local fallback exists
+  'glucose':             { bgImage: null,         icon: iconWaterDrop     }, // card image → GCP
+  'bp':                  { bgImage: null,         icon: iconHeart         }, // card image → GCP
 };
 
 /**

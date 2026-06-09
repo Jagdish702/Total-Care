@@ -69,9 +69,12 @@ export default function ProductExplorePage() {
   const { id }              = useParams();
   const { product, loading, error } = useProduct(id);
 
-  // Attach local image to the product object for sub-components
+  // Prefer GCP hero image from API; fall back to static local import
+  const heroImage = product
+    ? ((product.images ?? []).find(img => img.imageType === 'hero')?.imageUrl ?? PRODUCT_HERO_IMAGES[product.id] ?? null)
+    : null;
   const productWithImage = product
-    ? { ...product, image: PRODUCT_HERO_IMAGES[product.id] ?? null }
+    ? { ...product, image: heroImage }
     : null;
 
   return (

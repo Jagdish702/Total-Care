@@ -7,7 +7,10 @@ const productInclude = {
     orderBy: { displayOrder: 'asc' },
     include: {
       component: {
-        include: { features: { orderBy: { displayOrder: 'asc' } } },
+        include: {
+          features: { orderBy: { displayOrder: 'asc' } },
+          images:   { orderBy: { displayOrder: 'asc' } },
+        },
       },
     },
   },

@@ -10,9 +10,12 @@ const SUBSCRIPTION_ITEM = {
 };
 
 function BundleCard({ item, isLast }) {
+  const apiBundleImage = item.isFree
+    ? null
+    : (item.images ?? []).find(img => img.imageType === 'bundle_component')?.imageUrl ?? null;
   const image = item.isFree
     ? SUBSCRIPTION_IMAGE
-    : BUNDLE_COMPONENT_IMAGES[item.id] ?? null;
+    : apiBundleImage ?? BUNDLE_COMPONENT_IMAGES[item.id] ?? null;
 
   const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 
@@ -67,8 +70,9 @@ export default function BundleSection({ product }) {
         subtitle:      bi.component.subtitle,
         price:         bi.component.price,
         originalPrice: bi.component.originalPrice,
+        images:        bi.component.images ?? [],
       }))
-    : [{ id: product.id, name: product.name, description: product.description, price: product.price, originalPrice: product.originalPrice }];
+    : [{ id: product.id, name: product.name, description: product.description, price: product.price, originalPrice: product.originalPrice, images: product.images ?? [] }];
 
   const allItems = [...componentItems, SUBSCRIPTION_ITEM];
 
