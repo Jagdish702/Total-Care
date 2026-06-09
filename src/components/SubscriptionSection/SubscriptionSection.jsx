@@ -414,7 +414,7 @@ export default function SubscriptionSection() {
   if (isMobile) {
     return (
       <>
-        <section className="bg-white flex flex-col items-center w-full px-6 py-12"
+        <section id="subscription" className="bg-white flex flex-col items-center w-full px-6 py-12"
                  style={{ gap: '10px' }}>
 
           {/* Heading block */}
@@ -486,6 +486,7 @@ export default function SubscriptionSection() {
   return (
     <>
       <section
+        id="subscription"
         className="subscription-section-bg w-full overflow-hidden
                    flex flex-col gap-[60px] items-center
                    pt-[120px] pb-[60px]

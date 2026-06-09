@@ -741,6 +741,7 @@ export default function HeroSection() {
           {/* "View Plans" — full-width, 40 px tall, solid blue */}
           <button
             type="button"
+            onClick={() => document.getElementById('subscription')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             className="relative w-full flex items-center justify-center
                        h-10 rounded-xl overflow-hidden
                        font-inter font-medium text-base text-white
@@ -808,6 +809,7 @@ export default function HeroSection() {
           <div className="flex gap-6 items-center flex-wrap justify-center">
             <button
               type="button"
+              onClick={() => document.getElementById('subscription')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
               className="bg-[#004172] text-white font-inter font-medium text-base
                          leading-normal tracking-[0.2592px]
                          px-6 py-3 rounded-xl

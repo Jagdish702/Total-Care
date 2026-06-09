@@ -292,7 +292,7 @@ function ProductInfo({ product }) {
         >
           {product.bundleItems.map((item) => (
             <li key={item.id} className="ms-6 mb-0">
-              <span>{item.name}</span>
+              <span>{item.component.name}</span>
             </li>
           ))}
         </ul>
