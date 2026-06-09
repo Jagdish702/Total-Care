@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 // ─── Icons ─────────────────────────────────────────────────────────────────────
 
@@ -115,10 +115,14 @@ function Chip({ variant = 'success', text }) {
   );
 }
 
-function Toggle({ on = false }) {
+function Toggle({ on = false, onClick }) {
   return (
-    <div
-      className={`flex items-center w-[54px] h-[28px] rounded-full p-[2px] shrink-0 ${on ? 'justify-end' : 'justify-start'}`}
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={onClick}
+      className={`flex items-center w-[54px] h-[28px] rounded-full p-[2px] shrink-0 cursor-pointer border-0 transition-all duration-300 ${on ? 'justify-end' : 'justify-start'}`}
       style={{
         background: on
           ? 'linear-gradient(180deg, #10B981 0%, #00664C 100%)'
@@ -126,8 +130,8 @@ function Toggle({ on = false }) {
         boxShadow: 'inset 0px 0px 6px rgba(0,65,114,0.24)',
       }}
     >
-      <div className="w-6 h-6 bg-white rounded-full" style={{ boxShadow: '0px 2px 4px rgba(0,65,114,0.08)' }} />
-    </div>
+      <div className="w-6 h-6 bg-white rounded-full transition-all duration-300" style={{ boxShadow: '0px 2px 4px rgba(0,65,114,0.08)' }} />
+    </button>
   );
 }
 
@@ -202,6 +206,7 @@ function FilledBtn({ children, onClick }) {
 }
 
 function NotifRow({ icon, label, on }) {
+  const [enabled, setEnabled] = useState(on);
   return (
     <div className="flex items-center gap-3 md:gap-12 w-full">
       <div className="flex flex-1 items-center gap-3 min-w-0">
@@ -213,7 +218,7 @@ function NotifRow({ icon, label, on }) {
         </div>
         <p className="font-inter font-medium text-[16px] text-black leading-7 tracking-[0.5184px] whitespace-nowrap">{label}</p>
       </div>
-      <Toggle on={on} />
+      <Toggle on={enabled} onClick={() => setEnabled(prev => !prev)} />
     </div>
   );
 }
