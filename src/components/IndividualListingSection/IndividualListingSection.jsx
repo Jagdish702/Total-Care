@@ -142,13 +142,22 @@ function ComboCard({ item }) {
   return (
     <div
       className="relative border border-[#D7EAF9] rounded-[24px] overflow-hidden
-                 flex flex-col justify-end p-6
+                 flex flex-col
+                 md:justify-end md:p-6 md:min-h-[519px]
                  shadow-[inset_0px_0px_8px_0px_rgba(0,65,114,0.08)]
-                 min-h-[519px] cursor-pointer"
+                 cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="absolute inset-0 pointer-events-none rounded-[24px] bg-[#EDF9FF]">
+      {/* Mobile image — top block, hidden on desktop */}
+      {item.bgImage && (
+        <div className="md:hidden w-full h-[220px] shrink-0 overflow-hidden bg-[#EDF9FF]">
+          <img src={item.bgImage} alt="" className="w-full h-full object-cover object-center" />
+        </div>
+      )}
+
+      {/* Desktop background image — absolute full cover, hidden on mobile */}
+      <div className="hidden md:block absolute inset-0 pointer-events-none rounded-[24px] bg-[#EDF9FF]">
         {item.bgImage && (
           <img src={item.bgImage} alt="" className="absolute inset-0 w-full h-full object-cover object-center rounded-[24px]" />
         )}
@@ -157,12 +166,14 @@ function ComboCard({ item }) {
         <div className="absolute inset-0 rounded-[24px] transition-opacity duration-500"
              style={{ opacity: hovered ? 1 : 0, background: COMBO_HOVER_GRADIENT }} />
       </div>
+
       <div className="absolute inset-0 pointer-events-none rounded-[24px]
                       shadow-[inset_0px_0px_8px_0px_rgba(0,65,114,0.08)]" />
 
       <ChevronIcon expanded={hovered} onClick={() => setHovered(v => !v)} />
 
-      <div className="relative flex flex-col md:flex-row gap-6 md:gap-10 lg:gap-[120px] items-end w-full">
+      {/* Content — mobile gets own padding; desktop padding is on the card wrapper */}
+      <div className="relative p-6 md:p-0 flex flex-col md:flex-row gap-6 md:gap-10 lg:gap-[120px] items-end w-full">
         <div className="flex flex-1 flex-col items-start min-w-0">
           <div className="flex flex-col gap-[27px] items-start w-full">
             <div className="flex gap-2 items-center w-full drop-shadow-[0px_4px_6px_rgba(0,65,114,0.08)]">
@@ -245,13 +256,22 @@ function ProductCard({ item }) {
   return (
     <div
       className="relative border border-[#D7EAF9] rounded-[24px] overflow-hidden
-                 flex flex-col justify-end p-6
+                 flex flex-col
+                 md:justify-end md:p-6 md:min-h-[600px]
                  shadow-[inset_0px_0px_8px_0px_rgba(0,65,114,0.08)]
-                 min-h-[600px] cursor-pointer"
+                 cursor-pointer"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="absolute inset-0 pointer-events-none rounded-[24px] bg-[#EDF9FF]">
+      {/* Mobile image — top block, hidden on desktop */}
+      {item.bgImage && (
+        <div className="md:hidden w-full h-[220px] shrink-0 overflow-hidden bg-[#EDF9FF]">
+          <img src={item.bgImage} alt="" className="w-full h-full object-cover object-center" />
+        </div>
+      )}
+
+      {/* Desktop background image — absolute full cover, hidden on mobile */}
+      <div className="hidden md:block absolute inset-0 pointer-events-none rounded-[24px] bg-[#EDF9FF]">
         {item.bgImage && (
           <img src={item.bgImage} alt="" className="absolute inset-0 w-full h-full object-cover object-center rounded-[24px]" />
         )}
@@ -260,12 +280,14 @@ function ProductCard({ item }) {
         <div className="absolute inset-0 rounded-[24px] transition-opacity duration-500"
              style={{ opacity: hovered ? 1 : 0, background: INDIV_HOVER_GRADIENT }} />
       </div>
+
       <div className="absolute inset-0 pointer-events-none rounded-[24px]
                       shadow-[inset_0px_0px_8px_0px_rgba(0,65,114,0.08)]" />
 
       <ChevronIcon expanded={hovered} onClick={() => setHovered(v => !v)} />
 
-      <div className="relative flex flex-col sm:flex-row gap-5 sm:gap-8 lg:gap-[80px] items-end w-full">
+      {/* Content — mobile gets own padding; desktop padding is on the card wrapper */}
+      <div className="relative p-6 md:p-0 flex flex-col sm:flex-row gap-5 sm:gap-8 lg:gap-[80px] items-end w-full">
         <div className="flex flex-1 flex-col items-start min-w-0">
           <div className="flex flex-col gap-[27px] items-start w-full">
             <div className="flex gap-2 items-center w-full drop-shadow-[0px_4px_6px_rgba(0,65,114,0.08)]">
