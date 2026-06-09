@@ -100,7 +100,7 @@ const INPUT_CLS =
 
 function TextInput({ label, value, onChange, placeholder }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 min-w-0">
       <p className="font-inter font-medium text-[16px] text-black leading-normal tracking-[0.2592px]">
         {label}
       </p>
@@ -119,7 +119,7 @@ function TextInput({ label, value, onChange, placeholder }) {
 
 function SelectInput({ label, value, onChange, placeholder }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 min-w-0">
       <p className="font-inter font-medium text-[16px] text-black leading-normal tracking-[0.2592px]">
         {label}
       </p>
@@ -139,7 +139,7 @@ function SelectInput({ label, value, onChange, placeholder }) {
 
 function PhoneInput({ label, phoneValue, onPhoneChange }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 min-w-0">
       <p className="font-inter font-medium text-[16px] text-black leading-normal tracking-[0.2592px]">
         {label}
       </p>
@@ -162,7 +162,7 @@ function PhoneInput({ label, phoneValue, onPhoneChange }) {
         </div>
         {/* Right: phone number input */}
         <div
-          className="bg-white flex flex-1 items-center px-4 border-t border-b border-r border-[#ebebeb] rounded-r-[12px]"
+          className="bg-white flex flex-1 min-w-0 items-center px-4 border border-[#ebebeb] border-l-0 rounded-r-[12px]"
           style={{ boxShadow: '0px 2px 1px rgba(0,65,114,0.08), inset 0px 0px 2px rgba(0,65,114,0.08)' }}
         >
           <input
@@ -180,7 +180,7 @@ function PhoneInput({ label, phoneValue, onPhoneChange }) {
 
 function DatePickerInput({ label, value, onChange }) {
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 min-w-0">
       <p className="font-inter font-medium text-[16px] text-black leading-normal tracking-[0.2592px]">
         {label}
       </p>
