@@ -1,6 +1,6 @@
 import tipsMeditiveImg from '../../assets/product-explore/tips-meditive.png';
 import tipsOmronImg    from '../../assets/product-explore/tips-omron.png';
-import glucobuddyImg   from '../../assets/product-explore/glucobuddy.png';
+import glucobuddyImg   from '../../assets/product-explore/tips_1.png';
 import { useCart } from '../../context/CartContext';
 
 /* ─── Gradient style for product titles ──────────────────────────────────── */
@@ -16,10 +16,12 @@ const SCALE_TIPS = {
   id: 'scale',
   title: 'Meditive Body Composition Scale',
   tips: [
-    'Apply the sensor to a clean, dry area of the skin; avoid locations with scars, moles, or excessive hair.',
-    'Ensure the sensor is applied to the back of the upper arm for the most consistent interstitial fluid readings.',
-    'During the first 24 hours, readings may vary slightly as the sensor settles; prioritize trends over individual data points.',
-    'Keep your smartphone within 20 feet of the sensor to ensure a continuous Bluetooth data stream.',
+    'Place the scale on a hard, flat surface. Avoid carpets, rugs, and mats.',
+    'Stand barefoot with clean, dry feet on the metal sensors.',
+    'Stand still with your weight evenly distributed on both feet.',
+    'Weigh yourself at the same time each day, ideally in the morning before eating or drinking.',
+    'Avoid measuring immediately after exercise.',
+    'Keep the scale in one location and recalibrate to 0.0 if moved.',
   ],
   image: tipsMeditiveImg,
   imageAlt: 'Person standing on Meditive Body Composition Scale',
@@ -43,10 +45,11 @@ const GLUCOSE_TIPS = {
   id: 'glucose',
   title: 'GlucoBuddy Glucometer',
   tips: [
-    'Test blood sugar at consistent times each day — before meals and 2 hours after eating — to track patterns accurately.',
-    'Ensure your hands are clean and dry before testing; washing with soap and drying thoroughly prevents diluted or contaminated readings.',
-    'Store test strips in their original sealed vial away from heat, humidity, and direct sunlight to maintain accuracy.',
-    'Sync readings to the Total Care app immediately after each test to build a complete glucose history and share it with your doctor.',
+    'Ensure your hands are clean and completely dry before testing.',
+    'Always use fresh test strips within their expiration date.',
+    'Avoid using samples from alternative sites like the forearm unless advised.',
+    'Apply the blood drop to the correct edge of the test strip.',
+    'Allow the strip to completely "fill" with the blood droplet.',
   ],
   image: glucobuddyImg,
   imageAlt: 'GlucoBuddy glucometer accurate measurement tips',

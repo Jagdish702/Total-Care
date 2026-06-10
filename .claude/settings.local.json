@@ -58,7 +58,19 @@
       "Bash(ls /mnt/c/Users/HP/Downloads/sqlite/)",
       "Bash(ls \"/mnt/c/Users/HP/Desktop/trial store front/\" 2>/dev/null || echo \"WSL path not accessible\")",
       "Bash(dir /s /b \"C:\\\\Users\\\\HP\\\\Desktop\\\\trial store front\\\\src\")",
-      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\trial store front\" -Recurse -Force)"
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\trial store front\" -Recurse -Force)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :5173)",
+      "Bash(taskkill /PID 23576 /F)",
+      "Bash(taskkill /PID 18376 /F)",
+      "Bash(dir src\\\\App.jsx)",
+      "Bash(findstr /n \"AdminImageManager\")",
+      "Bash(Get-Item \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\App.jsx\")",
+      "Bash(Select-Object LastWriteTime, Length)",
+      "Bash(Select-String \"AdminImageManager\" \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\App.jsx\")",
+      "PowerShell($procs = netstat -ano | Select-String ':5173' | Where-Object { $_ -match 'LISTENING' }; $procs; $pid5173 = \\($procs[0] -split '\\\\s+'\\)[-1]; Get-Process -Id $pid5173 -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, Path)",
+      "PowerShell(taskkill /PID 18376 /F)",
+      "PowerShell(taskkill /PID 24624 /F)"
     ]
   }
 }
