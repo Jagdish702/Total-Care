@@ -43,7 +43,26 @@ async function findById(id) {
   const product = await prisma.product.findUnique({
     where: { id },
     include: {
-      ...productInclude,
+      features:        { orderBy: { displayOrder: 'asc' } },
+      images:          { orderBy: { displayOrder: 'asc' } },
+      highlights:      { orderBy: { displayOrder: 'asc' } },
+      howItWorksSteps: { orderBy: { displayOrder: 'asc' } },
+      tips:            { orderBy: { displayOrder: 'asc' } },
+      techSpecs:       { orderBy: { displayOrder: 'asc' } },
+      bundleItems: {
+        orderBy: { displayOrder: 'asc' },
+        include: {
+          component: {
+            include: {
+              features:        { orderBy: { displayOrder: 'asc' } },
+              images:          { orderBy: { displayOrder: 'asc' } },
+              howItWorksSteps: { orderBy: { displayOrder: 'asc' } },
+              tips:            { orderBy: { displayOrder: 'asc' } },
+              techSpecs:       { orderBy: { displayOrder: 'asc' } },
+            },
+          },
+        },
+      },
       detailTabs: {
         where: { isActive: true },
         orderBy: { displayOrder: 'asc' },

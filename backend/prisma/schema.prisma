@@ -37,6 +37,10 @@ model Product {
   testimonials           Testimonial[]
   statusCards            StatusCard[]            @relation("LinkedProduct")
   orderItems             OrderItem[]
+  howItWorksSteps        ProductHowItWorksStep[]
+  tips                   ProductTip[]
+  techSpecs              ProductTechSpec[]
+  highlights             ProductHighlight[]
 
   @@index([productType])
   @@index([isActive])
@@ -699,4 +703,56 @@ model Payment {
   @@index([status, initiatedAt])
   @@index([paymentMethod, status])
   @@map("payments")
+}
+
+model ProductHowItWorksStep {
+  id           Int    @id @default(autoincrement())
+  productId    String @map("product_id")
+  stepNumber   Int    @map("step_number")
+  title        String
+  description  String
+  displayOrder Int    @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_how_it_works_steps")
+}
+
+model ProductTip {
+  id           Int    @id @default(autoincrement())
+  productId    String @map("product_id")
+  tipText      String @map("tip_text")
+  displayOrder Int    @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_tips")
+}
+
+model ProductTechSpec {
+  id           Int    @id @default(autoincrement())
+  productId    String @map("product_id")
+  specGroup    String @map("spec_group")
+  specLabel    String @map("spec_label")
+  specValue    String @map("spec_value")
+  displayOrder Int    @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_tech_specs")
+}
+
+model ProductHighlight {
+  id            Int    @id @default(autoincrement())
+  productId     String @map("product_id")
+  highlightText String @map("highlight_text")
+  displayOrder  Int    @default(0) @map("display_order")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_highlights")
 }

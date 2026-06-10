@@ -516,6 +516,128 @@ async function main() {
   });
   console.log('  ✓ Product images (GCP URLs)');
 
+  // ─── How It Works Steps ─────────────────────
+  await prisma.productHowItWorksStep.deleteMany({});
+  await prisma.productHowItWorksStep.createMany({ data: [
+    // Scale (4 steps)
+    { productId: 'scale', stepNumber: 1, title: 'Step On',  description: 'Place the scale on a hard, flat surface. Step on with bare feet to ensure the electrodes can accurately measure impedance.', displayOrder: 1 },
+    { productId: 'scale', stepNumber: 2, title: 'Sync',     description: 'Open the Total Care app on your smartphone. The scale connects automatically via Bluetooth to transmit your data in real-time.', displayOrder: 2 },
+    { productId: 'scale', stepNumber: 3, title: 'Analyze',  description: 'Wait a few seconds for the scale to process. Your weight and other body metrics will appear instantly on the app dashboard.', displayOrder: 3 },
+    { productId: 'scale', stepNumber: 4, title: 'Track',    description: 'Save your results to visualize long-term trends. Compare your daily, weekly, or monthly progress to stay on top of your fitness goals.', displayOrder: 4 },
+    // BP (5 steps)
+    { productId: 'bp', stepNumber: 1, title: 'Wear',        description: 'Wrap the cuff around your arm and sit comfortably.', displayOrder: 1 },
+    { productId: 'bp', stepNumber: 2, title: 'Measure',     description: 'Press start. The device captures accurate readings in seconds.', displayOrder: 2 },
+    { productId: 'bp', stepNumber: 3, title: 'Sync',        description: 'Your data automatically syncs with the app.', displayOrder: 3 },
+    { productId: 'bp', stepNumber: 4, title: 'Understand',  description: 'View trends, insights, and alerts in one place.', displayOrder: 4 },
+    { productId: 'bp', stepNumber: 5, title: 'Act',         description: 'Get nudges to improve your daily habits.', displayOrder: 5 },
+    // Glucose (5 steps)
+    { productId: 'glucose', stepNumber: 1, title: 'Prepare', description: 'Wash and dry your hands and the lancing site.', displayOrder: 1 },
+    { productId: 'glucose', stepNumber: 2, title: 'Insert',  description: 'Insert a test strip into the meter. It turns on automatically.', displayOrder: 2 },
+    { productId: 'glucose', stepNumber: 3, title: 'Lance',   description: 'Use the lancing device to obtain a small blood droplet.', displayOrder: 3 },
+    { productId: 'glucose', stepNumber: 4, title: 'Test',    description: 'Gently apply the blood drop to the edge of the test strip.', displayOrder: 4 },
+    { productId: 'glucose', stepNumber: 5, title: 'Read',    description: 'View your results on the large, backlit display in 5 seconds.', displayOrder: 5 },
+  ]});
+  console.log('  ✓ How It Works steps');
+
+  // ─── Product Tips ────────────────────────────
+  await prisma.productTip.deleteMany({});
+  await prisma.productTip.createMany({ data: [
+    // Scale tips
+    { productId: 'scale', tipText: 'Place the scale on a hard, flat surface. Avoid carpets, rugs, and mats.', displayOrder: 1 },
+    { productId: 'scale', tipText: 'Stand barefoot with clean, dry feet on the metal sensors.', displayOrder: 2 },
+    { productId: 'scale', tipText: 'Stand still with your weight evenly distributed on both feet.', displayOrder: 3 },
+    { productId: 'scale', tipText: 'Weigh yourself at the same time each day, ideally in the morning before eating or drinking.', displayOrder: 4 },
+    { productId: 'scale', tipText: 'Avoid measuring immediately after exercise.', displayOrder: 5 },
+    { productId: 'scale', tipText: 'Keep the scale in one location and recalibrate to 0.0 if moved.', displayOrder: 6 },
+    // BP tips
+    { productId: 'bp', tipText: 'Measure at the same time of day every day (within 1 hour after getting up and before bed-time are recommended).', displayOrder: 1 },
+    { productId: 'bp', tipText: 'No bathing, drinking alcohol or caffeine, smoking, exercising or eating 30 minutes before taking a measurement.', displayOrder: 2 },
+    { productId: 'bp', tipText: 'Use appropriate arm cuff of small, medium, large & wide size.', displayOrder: 3 },
+    // Glucose tips
+    { productId: 'glucose', tipText: 'Ensure your hands are clean and completely dry before testing.', displayOrder: 1 },
+    { productId: 'glucose', tipText: 'Always use fresh test strips within their expiration date.', displayOrder: 2 },
+    { productId: 'glucose', tipText: 'Avoid using samples from alternative sites like the forearm unless advised.', displayOrder: 3 },
+    { productId: 'glucose', tipText: 'Apply the blood drop to the correct edge of the test strip.', displayOrder: 4 },
+    { productId: 'glucose', tipText: 'Allow the strip to completely "fill" with the blood droplet.', displayOrder: 5 },
+  ]});
+  console.log('  ✓ Product tips');
+
+  // ─── Tech Specs ──────────────────────────────
+  await prisma.productTechSpec.deleteMany({});
+  await prisma.productTechSpec.createMany({ data: [
+    // Scale specs
+    { productId: 'scale', specGroup: 'Overview',             specLabel: 'Model',              specValue: 'Meditive BCM-202',                        displayOrder: 1  },
+    { productId: 'scale', specGroup: 'Overview',             specLabel: 'Display',            specValue: 'Hidden LED (high-contrast)',               displayOrder: 2  },
+    { productId: 'scale', specGroup: 'Overview',             specLabel: 'Connectivity',       specValue: 'Bluetooth 4.0 / 5.0',                     displayOrder: 3  },
+    { productId: 'scale', specGroup: 'Dimensions & Weight',  specLabel: 'Dimensions',         specValue: '280 x 280 x 24 mm',                       displayOrder: 4  },
+    { productId: 'scale', specGroup: 'Dimensions & Weight',  specLabel: 'Weight',             specValue: '1.2 kg',                                  displayOrder: 5  },
+    { productId: 'scale', specGroup: 'Power & Build',        specLabel: 'Power Source',       specValue: '3 x 1.5V AAA Batteries',                  displayOrder: 6  },
+    { productId: 'scale', specGroup: 'Power & Build',        specLabel: 'Material',           specValue: '6mm Tempered Safety Glass / ABS Plastic', displayOrder: 7  },
+    { productId: 'scale', specGroup: 'Power & Build',        specLabel: 'Capacity',           specValue: '180 kg (400 lbs)',                        displayOrder: 8  },
+    { productId: 'scale', specGroup: 'Power & Build',        specLabel: 'Graduation',         specValue: '0.05 kg',                                 displayOrder: 9  },
+    { productId: 'scale', specGroup: 'Identification',       specLabel: 'Sensors',            specValue: '4 x High-Precision G-Sensors',            displayOrder: 10 },
+    { productId: 'scale', specGroup: 'Identification',       specLabel: 'App Compatibility',  specValue: 'iOS 8.0+ / Android 4.3+',                 displayOrder: 11 },
+    { productId: 'scale', specGroup: 'Identification',       specLabel: 'Certifications',     specValue: 'CE, RoHS, FCC',                           displayOrder: 12 },
+    { productId: 'scale', specGroup: 'Warranty',             specLabel: 'Standard Warranty',  specValue: '1 Year',                                  displayOrder: 13 },
+    // BP specs
+    { productId: 'bp', specGroup: 'Overview',             specLabel: 'Model',              specValue: 'Omron HEM-7140T1-AP',                     displayOrder: 1  },
+    { productId: 'bp', specGroup: 'Overview',             specLabel: 'Display',            specValue: 'Digital LCD',                             displayOrder: 2  },
+    { productId: 'bp', specGroup: 'Overview',             specLabel: 'Connectivity',       specValue: 'Bluetooth 4.2',                           displayOrder: 3  },
+    { productId: 'bp', specGroup: 'Dimensions & Weight',  specLabel: 'Dimensions',         specValue: '148 x 98 x 50 mm',                       displayOrder: 4  },
+    { productId: 'bp', specGroup: 'Dimensions & Weight',  specLabel: 'Weight',             specValue: '230 g (without batteries)',               displayOrder: 5  },
+    { productId: 'bp', specGroup: 'Power & Build',        specLabel: 'Power Source',       specValue: '4 x 1.5V AA Batteries',                  displayOrder: 6  },
+    { productId: 'bp', specGroup: 'Power & Build',        specLabel: 'Material',           specValue: 'ABS Plastic',                             displayOrder: 7  },
+    { productId: 'bp', specGroup: 'Power & Build',        specLabel: 'Cuff Size',          specValue: 'Medium (22-32 cm)',                       displayOrder: 8  },
+    { productId: 'bp', specGroup: 'Identification',       specLabel: 'App Compatibility',  specValue: 'iOS 10.0+ / Android 5.0+',               displayOrder: 9  },
+    { productId: 'bp', specGroup: 'Identification',       specLabel: 'Certifications',     specValue: 'CE, FDA, MHRA',                          displayOrder: 10 },
+    { productId: 'bp', specGroup: 'Warranty',             specLabel: 'Standard Warranty',  specValue: '2 Years',                                displayOrder: 11 },
+    // Glucose specs
+    { productId: 'glucose', specGroup: 'Overview',            specLabel: 'Model',              specValue: 'GlucoBuddy CGM Sensor',                   displayOrder: 1  },
+    { productId: 'glucose', specGroup: 'Overview',            specLabel: 'Display',            specValue: 'Via Smartphone App (NFC / Bluetooth)',     displayOrder: 2  },
+    { productId: 'glucose', specGroup: 'Overview',            specLabel: 'Connectivity',       specValue: 'NFC + Bluetooth 5.0',                     displayOrder: 3  },
+    { productId: 'glucose', specGroup: 'Sensor & Accuracy',   specLabel: 'Measurement Range',  specValue: '40-400 mg/dL',                            displayOrder: 4  },
+    { productId: 'glucose', specGroup: 'Sensor & Accuracy',   specLabel: 'Wear Duration',      specValue: 'Up to 14 Days',                           displayOrder: 5  },
+    { productId: 'glucose', specGroup: 'Sensor & Accuracy',   specLabel: 'MARD Accuracy',      specValue: '< 9%',                                    displayOrder: 6  },
+    { productId: 'glucose', specGroup: 'Sensor & Accuracy',   specLabel: 'Warm-Up Time',       specValue: '60 Minutes after application',            displayOrder: 7  },
+    { productId: 'glucose', specGroup: 'Power & Build',       specLabel: 'Power Source',       specValue: 'Built-in Battery (sensor)',               displayOrder: 8  },
+    { productId: 'glucose', specGroup: 'Power & Build',       specLabel: 'Water Resistance',   specValue: 'IP28 - up to 1m for 30 min',             displayOrder: 9  },
+    { productId: 'glucose', specGroup: 'Power & Build',       specLabel: 'Sensor Size',        specValue: '35 mm x 35 mm x 5 mm',                   displayOrder: 10 },
+    { productId: 'glucose', specGroup: 'Identification',      specLabel: 'App Compatibility',  specValue: 'iOS 14.0+ / Android 8.0+',               displayOrder: 11 },
+    { productId: 'glucose', specGroup: 'Identification',      specLabel: 'Certifications',     specValue: 'CE, ISO 15197',                          displayOrder: 12 },
+    { productId: 'glucose', specGroup: 'Warranty',            specLabel: 'Standard Warranty',  specValue: '6 Months',                               displayOrder: 13 },
+  ]});
+  console.log('  ✓ Tech specs');
+
+  // ─── Product Highlights (MoreThanDevice) ─────
+  await prisma.productHighlight.deleteMany({});
+  await prisma.productHighlight.createMany({ data: [
+    { productId: 'complete-essentials', highlightText: 'Blood sugar, BP, pulse & body composition - all in one', displayOrder: 1 },
+    { productId: 'complete-essentials', highlightText: 'Syncs with Total Care app',                              displayOrder: 2 },
+    { productId: 'complete-essentials', highlightText: 'AI insights + alerts',                                   displayOrder: 3 },
+    { productId: 'complete-essentials', highlightText: 'Doctor support when needed',                             displayOrder: 4 },
+    { productId: 'bp-essentials', highlightText: 'Blood pressure & pulse monitoring, daily',       displayOrder: 1 },
+    { productId: 'bp-essentials', highlightText: 'Body composition tracking - BMI, fat, muscle',  displayOrder: 2 },
+    { productId: 'bp-essentials', highlightText: 'Syncs with Total Care app',                     displayOrder: 3 },
+    { productId: 'bp-essentials', highlightText: 'AI insights + doctor support',                  displayOrder: 4 },
+    { productId: 'diabetes-essentials', highlightText: 'Fast blood glucose results in 5 seconds', displayOrder: 1 },
+    { productId: 'diabetes-essentials', highlightText: 'Body composition - weight, BMI & body fat', displayOrder: 2 },
+    { productId: 'diabetes-essentials', highlightText: 'Syncs with Total Care app',               displayOrder: 3 },
+    { productId: 'diabetes-essentials', highlightText: 'AI insights + alerts',                    displayOrder: 4 },
+    { productId: 'scale', highlightText: 'Tracks fat, muscle, BMI, metabolism',  displayOrder: 1 },
+    { productId: 'scale', highlightText: 'Syncs with Total Care app',            displayOrder: 2 },
+    { productId: 'scale', highlightText: 'AI insights + alerts',                 displayOrder: 3 },
+    { productId: 'scale', highlightText: 'Doctor support when needed',           displayOrder: 4 },
+    { productId: 'glucose', highlightText: 'Fast results in 5 seconds, 900-test memory', displayOrder: 1 },
+    { productId: 'glucose', highlightText: 'Before & after meal sugar tracking',          displayOrder: 2 },
+    { productId: 'glucose', highlightText: 'Syncs with Total Care app',                   displayOrder: 3 },
+    { productId: 'glucose', highlightText: 'AI insights + alerts',                        displayOrder: 4 },
+    { productId: 'bp', highlightText: 'Clinically validated BP & pulse monitoring', displayOrder: 1 },
+    { productId: 'bp', highlightText: 'Irregular heartbeat detection',              displayOrder: 2 },
+    { productId: 'bp', highlightText: 'Syncs with Total Care app',                  displayOrder: 3 },
+    { productId: 'bp', highlightText: 'AI insights + doctor support',               displayOrder: 4 },
+  ]});
+  console.log('  ✓ Product highlights');
+
   console.log('\n✅ Database seeded successfully!');
 }
 

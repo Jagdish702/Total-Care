@@ -19,12 +19,12 @@ import bpStep3Img from '../../assets/product-explore/how-it-works-bp-step3.png';
 import bpStep4Img from '../../assets/product-explore/how-it-works-bp-step4.png';
 import bpStep5Img from '../../assets/product-explore/how-it-works-bp-step5.png';
 
-// Glucose (GlucoBuddy) — uses available gluco assets as placeholders
-import glucoStep1Img from '../../assets/product-explore/RGB GlucoBuddy Glucometer for explore hero page.png';
-import glucoStep2Img from '../../assets/product-explore/rgb glucobody tech spec.png';
-import glucoStep3Img from '../../assets/product-explore/how-it-works-bp-step4.png'; // app screenshot
-import glucoStep4Img from '../../assets/product-explore/how-it-works-bp-step5.png'; // insights UI
-import glucoStep5Img from '../../assets/product-explore/how-it-works-scale-step4.png'; // health cards
+// Glucose (GlucoBuddy) — exact images from Figma node 615:6847
+import glucoStep1Img from '../../assets/product-explore/how-it-works-gluco-step1.png';
+import glucoStep2Img from '../../assets/product-explore/how-it-works-gluco-step2.png';
+import glucoStep3Img from '../../assets/product-explore/how-it-works-gluco-step3.png';
+import glucoStep4Img from '../../assets/product-explore/how-it-works-gluco-step4.png';
+import glucoStep5Img from '../../assets/product-explore/how-it-works-gluco-step5.png';
 
 /* ─── Step data ────────────────────────────────────────────────────────────── */
 
@@ -105,46 +105,41 @@ const GLUCOSE_STEPS = [
   {
     number: '1',
     title: 'Prepare',
-    description:
-      'Insert a test strip into the GlucoBuddy. Use the lancing device to get a small blood sample from your fingertip.',
+    description: 'Wash and dry your hands and the lancing site.',
     image: glucoStep1Img,
     objectPosition: 'center',
   },
   {
     number: '2',
-    title: 'Test',
-    description:
-      'Touch the blood drop to the test strip tip. Accurate results appear in just 5 seconds.',
+    title: 'Insert',
+    description: 'Insert a test strip into the meter. It turns on automatically.',
     image: glucoStep2Img,
     objectPosition: 'center',
   },
   {
     number: '3',
-    title: 'Sync',
-    description:
-      'Your glucose reading syncs automatically to the Total Care app via Bluetooth. No manual logging needed.',
+    title: 'Lance',
+    description: 'Use the lancing device to obtain a small blood droplet.',
     image: glucoStep3Img,
     objectPosition: 'center',
   },
   {
     number: '4',
-    title: 'Analyze',
-    description:
-      'Get AI-powered insights on your glucose patterns, meal impact, and activity effects throughout the day.',
+    title: 'Test',
+    description: 'Gently apply the blood drop to the edge of the test strip.',
     image: glucoStep4Img,
     objectPosition: 'center',
   },
   {
     number: '5',
-    title: 'Act',
-    description:
-      'Receive personalized recommendations for diet and lifestyle adjustments to maintain healthy glucose levels.',
+    title: 'Read',
+    description: 'View your results on the large, backlit display in 5 seconds.',
     image: glucoStep5Img,
     objectPosition: 'center',
   },
 ];
 
-/* ─── Product → tab config ─────────────────────────────────────────────────── */
+/* ─── Product → tab config (hardcoded fallback) ─────────────────────────────── */
 
 const PRODUCT_TABS = {
   'complete-essentials': [
@@ -176,10 +171,66 @@ const DEFAULT_TABS = [
   { label: 'Omron BP Monitor',               steps: BP_STEPS    },
 ];
 
+/* ─── Dynamic DB helpers ────────────────────────────────────────────────────── */
+
+// Maps product id → ordered step images (stays hardcoded)
+const STEP_IMAGES = {
+  'scale':   [scaleStep1Img, scaleStep2Img, scaleStep3Img, scaleStep4Img],
+  'bp':      [bpStep1Img, bpStep2Img, bpStep3Img, bpStep4Img, bpStep5Img],
+  'glucose': [glucoStep1Img, glucoStep2Img, glucoStep3Img, glucoStep4Img, glucoStep5Img],
+};
+
+// Maps product id → display label for the tab
+const PRODUCT_TAB_LABEL = {
+  'scale':   'Meditive Body Composition Scale',
+  'bp':      'Omron BP Monitor',
+  'glucose': 'GlucoBuddy CGM',
+  'complete-essentials': 'Complete Essentials',
+  'bp-essentials':       'BP Essentials',
+  'diabetes-essentials': 'Diabetes Essentials',
+};
+
+function buildStepsFromDB(dbSteps, productId) {
+  const imgs = STEP_IMAGES[productId] || [];
+  return dbSteps.map((s, i) => ({
+    number: String(s.stepNumber ?? i + 1),
+    title: s.title,
+    description: s.description,
+    image: imgs[i] || null,
+    objectPosition: 'center',
+  }));
+}
+
+function buildTabsFromProduct(product) {
+  if (!product) return DEFAULT_TABS;
+
+  // Individual product with DB steps
+  if ((product.howItWorksSteps ?? []).length > 0) {
+    return [{
+      label: PRODUCT_TAB_LABEL[product.id] || product.name,
+      steps: buildStepsFromDB(product.howItWorksSteps, product.id),
+    }];
+  }
+
+  // Bundle: derive tabs from each component's steps
+  if ((product.bundleItems ?? []).length > 0) {
+    const tabs = product.bundleItems
+      .filter(bi => (bi.component.howItWorksSteps ?? []).length > 0)
+      .map(bi => ({
+        label: PRODUCT_TAB_LABEL[bi.component.id] || bi.component.name,
+        steps: buildStepsFromDB(bi.component.howItWorksSteps, bi.component.id),
+      }));
+    if (tabs.length > 0) return tabs;
+  }
+
+  // Hardcoded fallback
+  return PRODUCT_TABS[product.id] || DEFAULT_TABS;
+}
+
 /* ─── HowItWorksSection ─────────────────────────────────────────────────────── */
 
 export default function HowItWorksSection({ product }) {
-  const tabs  = (product && PRODUCT_TABS[product.id]) || DEFAULT_TABS;
+  const tabs  = buildTabsFromProduct(product);
 
   const [activeTab,  setActiveTab]  = useState(0);
   const [activeStep, setActiveStep] = useState(0);
@@ -257,15 +308,15 @@ export default function HowItWorksSection({ product }) {
 
         {/* ── Tab navigation — Figma node 573:6331, w-[1077px] ── */}
         {tabs.length > 1 && (
-          <div className="flex w-full max-w-[1077px]">
+          <div className="flex w-full max-w-[1077px] overflow-x-auto">
             {tabs.map((tab, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => handleTabChange(i)}
-                className={`flex-1 min-w-0 px-4 py-[14px] text-center
+                className={`flex-1 px-4 py-[14px] text-center whitespace-nowrap
                             font-inter tracking-[0.3888px]
-                            text-[14px] sm:text-[18px] md:text-[20px] lg:text-[24px]
+                            text-[13px] sm:text-[15px] md:text-[17px] lg:text-[20px]
                             transition-colors duration-200
                             ${activeTab === i
                               ? 'border-b-2 border-[#004172] text-[#004172] font-medium'

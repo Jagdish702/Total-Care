@@ -136,6 +136,61 @@ const ALL_SPECS = [MEDITIVE_SPECS, OMRON_SPECS, GLUCOBUDDY_SPECS];
 
 const TABS = ['Meditive Body Composition Scale', 'Omron BP Monitor', 'GlucoBuddy CGM'];
 
+/* ─── Dynamic DB helpers ─────────────────────────────────────────────────────── */
+
+const SPEC_IMAGES = {
+  'scale':   techSpecsScaleImg,
+  'bp':      techSpecsOmronImg,
+  'glucose': techSpecsGlucoImg,
+};
+
+const SPEC_TAB_LABELS = {
+  'scale':   'Meditive Body Composition Scale',
+  'bp':      'Omron BP Monitor',
+  'glucose': 'GlucoBuddy CGM',
+};
+
+function groupSpecs(techSpecs) {
+  const grouped = {};
+  const order = [];
+  techSpecs.forEach(spec => {
+    if (!grouped[spec.specGroup]) {
+      grouped[spec.specGroup] = [];
+      order.push(spec.specGroup);
+    }
+    grouped[spec.specGroup].push([spec.specLabel, spec.specValue]);
+  });
+  return order.map(group => ({ title: group, rows: grouped[group] }));
+}
+
+function buildSpecTabsFromProduct(product) {
+  if (!product) return { tabs: TABS, images: TAB_IMAGES, allSpecs: ALL_SPECS };
+
+  // Individual product with DB specs
+  if ((product.techSpecs ?? []).length > 0) {
+    return {
+      tabs:     [SPEC_TAB_LABELS[product.id] || product.name],
+      images:   [SPEC_IMAGES[product.id] || techSpecsScaleImg],
+      allSpecs: [groupSpecs(product.techSpecs)],
+    };
+  }
+
+  // Bundle: tab per component
+  if ((product.bundleItems ?? []).length > 0) {
+    const components = product.bundleItems.filter(bi => (bi.component.techSpecs ?? []).length > 0);
+    if (components.length > 0) {
+      return {
+        tabs:     components.map(bi => SPEC_TAB_LABELS[bi.component.id] || bi.component.name),
+        images:   components.map(bi => SPEC_IMAGES[bi.component.id] || techSpecsScaleImg),
+        allSpecs: components.map(bi => groupSpecs(bi.component.techSpecs)),
+      };
+    }
+  }
+
+  // Hardcoded fallback
+  return { tabs: TABS, images: TAB_IMAGES, allSpecs: ALL_SPECS };
+}
+
 /* ─── SpecGroup ──────────────────────────────────────────────────────────────── */
 function SpecGroup({ title, rows }) {
   return (
@@ -169,9 +224,11 @@ function SpecGroup({ title, rows }) {
 }
 
 /* ─── TechSpecsSection ───────────────────────────────────────────────────────── */
-export default function TechSpecsSection() {
+export default function TechSpecsSection({ product }) {
   const [activeTab, setActiveTab] = useState(0);
-  const specs = ALL_SPECS[activeTab];
+
+  const { tabs: dynamicTabs, images: dynamicImages, allSpecs: dynamicSpecs } = buildSpecTabsFromProduct(product);
+  const specs = dynamicSpecs[activeTab] || dynamicSpecs[0] || [];
 
   return (
     <section className="w-full bg-black">
@@ -187,15 +244,15 @@ export default function TechSpecsSection() {
         </p>
 
         {/* ── Tabs: max-w matches Figma's 1077px ── */}
-        <div className="flex items-stretch w-full max-w-[1077px]">
-          {TABS.map((tab, i) => (
+        <div className="flex items-stretch w-full max-w-[1077px] overflow-x-auto">
+          {dynamicTabs.map((tab, i) => (
             <button
               key={tab}
               onClick={() => setActiveTab(i)}
-              className={`flex flex-1 items-center justify-center
+              className={`flex flex-1 items-center justify-center whitespace-nowrap
                           px-5 py-[14px] font-inter text-center
                           leading-normal tracking-[0.3888px]
-                          text-[14px] md:text-[20px] lg:text-[24px]
+                          text-[13px] sm:text-[15px] md:text-[17px] lg:text-[20px]
                           transition-colors duration-200
                           ${activeTab === i
                             ? 'border-b border-[#33c1e4] text-[#33c1e4] font-medium'
@@ -211,8 +268,8 @@ export default function TechSpecsSection() {
         <div className="w-full max-w-[1000px]" style={{ aspectRatio: '1000/632.8' }}>
           <img
             key={activeTab}
-            src={TAB_IMAGES[activeTab]}
-            alt={TAB_ALTS[activeTab]}
+            src={dynamicImages[activeTab]}
+            alt={dynamicTabs[activeTab]}
             className="w-full h-full object-contain transition-opacity duration-300"
             style={{ mixBlendMode: 'luminosity' }}
           />

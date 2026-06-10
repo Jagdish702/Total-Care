@@ -56,7 +56,7 @@ const GLUCOSE_TIPS = {
   imageLabel: null,
 };
 
-/* ─── Product → tips rows mapping ───────────────────────────────────────── */
+/* ─── Product → tips rows mapping (hardcoded fallback) ──────────────────── */
 const PRODUCT_TIPS_MAP = {
   'complete-essentials': [SCALE_TIPS, BP_TIPS, GLUCOSE_TIPS],
   'bp-essentials':       [SCALE_TIPS, BP_TIPS],
@@ -67,6 +67,52 @@ const PRODUCT_TIPS_MAP = {
 };
 
 const DEFAULT_TIPS = [SCALE_TIPS, BP_TIPS];
+
+/* ─── Dynamic DB helpers ─────────────────────────────────────────────────── */
+
+const TIPS_META = {
+  'scale':   { image: tipsMeditiveImg, imageAlt: 'Person standing on Meditive Body Composition Scale', imageLabel: null,        title: 'Meditive Body Composition Scale' },
+  'bp':      { image: tipsOmronImg,   imageAlt: 'Correct posture for upper arm BP measurement',        imageLabel: 'Correct posture for upper arm blood pressure measurement', title: 'Omron BP Monitor - HEM 7140-AP' },
+  'glucose': { image: glucobuddyImg,  imageAlt: 'GlucoBuddy glucometer accurate measurement tips',    imageLabel: null,        title: 'GlucoBuddy Glucometer' },
+};
+
+function buildTipRows(product) {
+  if (!product) return DEFAULT_TIPS;
+
+  // Individual product with DB tips
+  if ((product.tips ?? []).length > 0) {
+    const meta = TIPS_META[product.id] || {};
+    return [{
+      id: product.id,
+      title: meta.title || product.name,
+      tips: product.tips.map(t => t.tipText),
+      image: meta.image || null,
+      imageAlt: meta.imageAlt || product.name,
+      imageLabel: meta.imageLabel || null,
+    }];
+  }
+
+  // Bundle: one tip row per component that has tips
+  if ((product.bundleItems ?? []).length > 0) {
+    const rows = product.bundleItems
+      .filter(bi => (bi.component.tips ?? []).length > 0)
+      .map(bi => {
+        const meta = TIPS_META[bi.component.id] || {};
+        return {
+          id: bi.component.id,
+          title: meta.title || bi.component.name,
+          tips: bi.component.tips.map(t => t.tipText),
+          image: meta.image || null,
+          imageAlt: meta.imageAlt || bi.component.name,
+          imageLabel: meta.imageLabel || null,
+        };
+      });
+    if (rows.length > 0) return rows;
+  }
+
+  // Hardcoded fallback
+  return PRODUCT_TIPS_MAP[product.id] || DEFAULT_TIPS;
+}
 
 /* ─── Cart icon (inline SVG) ─────────────────────────────────────────────── */
 function CartIcon() {
@@ -183,7 +229,7 @@ function TipRow({ data, index }) {
 
 /* ─── TipsSection ────────────────────────────────────────────────────────── */
 export default function TipsSection({ product }) {
-  const rows = (product && PRODUCT_TIPS_MAP[product.id]) || DEFAULT_TIPS;
+  const rows = buildTipRows(product);
 
   return (
     <section id="tips" className="w-full bg-white overflow-hidden">

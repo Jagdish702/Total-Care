@@ -93,7 +93,7 @@ export default function ProductExplorePage() {
           <BuiltForProgressSection />
           <HowItWorksSection product={productWithImage} />
           <TipsSection product={productWithImage} />
-          <TechSpecsSection />
+          <TechSpecsSection product={productWithImage} />
           <FAQSection />
           <FooterSection />
         </>

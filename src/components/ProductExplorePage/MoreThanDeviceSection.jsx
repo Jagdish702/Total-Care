@@ -87,7 +87,10 @@ function CartIcon() {
 
 /* ─── MoreThanDeviceSection ───────────────────────────────────────────────── */
 export default function MoreThanDeviceSection({ product }) {
-  const config = (product && PRODUCT_CONFIG[product.id]) || DEFAULT_CONFIG;
+  const dbHighlights = product?.highlights ?? [];
+  const config = dbHighlights.length > 0
+    ? { ...((product && PRODUCT_CONFIG[product.id]) || DEFAULT_CONFIG), features: dbHighlights.map(h => h.highlightText) }
+    : (product && PRODUCT_CONFIG[product.id]) || DEFAULT_CONFIG;
 
   return (
     <section className="w-full bg-white">
