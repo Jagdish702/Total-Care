@@ -378,7 +378,7 @@ function CorporateSection({ isSelected, onSelect, onApplied, onRemoved }) {
           <p className="font-inter font-light text-[16px] text-black tracking-[0.2592px] leading-[1.2]">
             Enter the OTP sent to {email || 'your email'}
           </p>
-          <div className="flex items-center justify-between pl-0 pr-0 py-0 w-full">
+          <div className="flex flex-wrap gap-3 items-center justify-between w-full">
             <OtpBoxes
               value={otp}
               onChange={handleOtpChange}
@@ -536,8 +536,8 @@ export default function AvailDiscounts({ onDiscountChange }) {
   };
 
   return (
-    <div className="flex flex-col gap-0 w-full border-t border-b border-[#CCC] py-4">
-      <div className="flex flex-col gap-[24px] px-[24px] py-[0]">
+    <div className="flex flex-col gap-0 w-full border-t border-b border-[#CCC] py-4 overflow-x-hidden">
+      <div className="flex flex-col gap-[24px] px-4 sm:px-[24px] py-[0]">
 
         {/* Heading */}
         <p className="font-inter font-bold text-[18px] text-black tracking-[0.5825px] leading-[28px]">
