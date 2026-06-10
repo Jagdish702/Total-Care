@@ -3,6 +3,7 @@ import Header from '../Header/Header';
 import ProductHeroSection from './ProductHeroSection';
 import BundleSection from './BundleSection';
 import MoreThanDeviceSection from './MoreThanDeviceSection';
+import WhatsInTheBoxSection from './WhatsInTheBoxSection';
 import BuiltForProgressSection from './BuiltForProgressSection';
 import HowItWorksSection from './HowItWorksSection';
 import TipsSection from './TipsSection';
@@ -89,8 +90,11 @@ export default function ProductExplorePage() {
         <>
           <ProductHeroSection product={productWithImage} />
           <BundleSection product={productWithImage} />
-          <MoreThanDeviceSection product={productWithImage} />
-          <BuiltForProgressSection />
+          {productWithImage.productType === 'bundle'
+            ? <MoreThanDeviceSection product={productWithImage} />
+            : <WhatsInTheBoxSection product={productWithImage} />
+          }
+          <BuiltForProgressSection product={productWithImage} />
           <HowItWorksSection product={productWithImage} />
           <TipsSection product={productWithImage} />
           <TechSpecsSection product={productWithImage} />

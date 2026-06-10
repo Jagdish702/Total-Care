@@ -83,7 +83,21 @@
       "Bash(node src/server.js)",
       "Bash(curl -s http://localhost:4000/health)",
       "Bash(curl -s http://localhost:4000/api/products/scale)",
-      "Bash(curl -s http://localhost:4000/api/products/complete-essentials)"
+      "Bash(curl -s http://localhost:4000/api/products/complete-essentials)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\" -Directory)",
+      "Bash(Select-Object Name)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "Bash(curl -s -o \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\figma_overview.png\" \"https://www.figma.com/api/mcp/asset/793286c8-df67-467f-b7b7-ea686b3f9ccc\")",
+      "Bash(curl -s -o \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\whats-in-box-bp.png\" \"https://www.figma.com/api/mcp/asset/c964aa12-9fa8-4d3b-b82b-80c46367df02\")",
+      "Bash(dir \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\\" /b 2>nul | sort)",
+      "Bash(curl -s -o \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\figma_test.png\" \"https://www.figma.com/api/mcp/asset/d4f85caf-d5e6-45ec-9b29-06698fcc510a\")",
+      "Bash(del \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\figma_overview.png\")",
+      "Bash(del \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\\\\assets\\\\product-explore\\\\figma_test.png\")",
+      "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-bp.png\" \"https://www.figma.com/api/mcp/asset/28e47f23-08ee-4cf5-b659-88f499edf65b\")",
+      "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-scale.png\" \"https://www.figma.com/api/mcp/asset/9d64dfec-d95e-4aa5-b274-5abc5a5e0c67\")",
+      "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-glucose.png\" \"https://www.figma.com/api/mcp/asset/bd26652c-44be-48c2-8fbd-5b2012fbfae9\")",
+      "Bash(findstr /C:\"\\\\\"dev\\\\\"\")"
     ]
   }
 }
