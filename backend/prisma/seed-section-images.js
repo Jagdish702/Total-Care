@@ -56,8 +56,7 @@ async function main() {
     // ── complete-essentials (4 cards) ─────────────────────────────────────────
     { productId: 'complete-essentials', displayOrder: 1, imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Build_for_progress_1.png' }, // card 1 – baseline weight
     { productId: 'complete-essentials', displayOrder: 2, imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Build_for_progress_3.png' }, // card 2 – after activity
-    { productId: 'complete-essentials', displayOrder: 3, imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/moment_1.png
-      ' }, // card 3 – start of day glucose
+    { productId: 'complete-essentials', displayOrder: 3, imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/moment_1.png' }, // card 3 – start of day glucose
     { productId: 'complete-essentials', displayOrder: 4, imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/moment_2.png' }, // card 4 – around activity
   ];
 
