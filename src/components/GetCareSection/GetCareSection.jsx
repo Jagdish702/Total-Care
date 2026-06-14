@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
+import { usePromoText } from '../../hooks/usePromoText';
+import { useProducts } from '../../hooks/useProducts';
 
 /* ─── Product assets (same as IndividualListingSection) ─────────────────── */
 import bgBpMonitor       from '../../assets/products/bg-bp-monitor.jpg';
@@ -26,8 +28,7 @@ const icoSugar    = 'https://www.figma.com/api/mcp/asset/0f1eac50-2cb7-472a-9a98
 const icoPostDx   = 'https://www.figma.com/api/mcp/asset/b1132177-2c59-4ea2-85ad-59ec36272417';
 
 /* ─── Design tokens ─────────────────────────────────────────────────────── */
-const PURPLE_GRADIENT    = 'linear-gradient(118.61deg, #B189FF 0%, #2E008B 96.072%)';
-const SUBSCRIPTION_TEXT  = '3 months of TotalCare subscription FREE';
+const PURPLE_GRADIENT = 'linear-gradient(118.61deg, #B189FF 0%, #2E008B 96.072%)';
 
 /* Card bg gradients — default (collapsed) vs expanded, matches web hover states */
 const CARD_GRADIENT_DEFAULT  = 'linear-gradient(183.51deg, rgba(255,255,255,0) 40%, rgba(255,255,255,0.5) 65%, rgba(255,255,255,0.85) 96%)';
@@ -180,6 +181,7 @@ function MobileProductCard({ item, type }) {
   const [expanded, setExpanded] = useState(false);
   const { showToast } = useCart();
   const navigate = useNavigate();
+  const promoText = usePromoText();
 
   const handleAddToCart = () => {
     showToast({
@@ -289,7 +291,7 @@ function MobileProductCard({ item, type }) {
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}
           >
-            {SUBSCRIPTION_TEXT}
+            {promoText}
           </p>
         </div>
 
@@ -378,10 +380,12 @@ function MobileProductCard({ item, type }) {
 }
 
 /* ─── Product bottom sheet ───────────────────────────────────────────────── */
-function ProductSheet({ focusId, focusLabel, onClose }) {
+function ProductSheet({ focusId, focusLabel, productImgMap = {}, onClose }) {
   const map = FOCUS_MAP[focusId] || { combos: [], devices: [] };
-  const combos  = COMBOS.filter(c => map.combos.includes(c.id));
-  const devices = DEVICES.filter(d => map.devices.includes(d.id));
+  const combos  = COMBOS.filter(c => map.combos.includes(c.id))
+    .map(c => ({ ...c, bgImage: productImgMap[c.id] ?? c.bgImage }));
+  const devices = DEVICES.filter(d => map.devices.includes(d.id))
+    .map(d => ({ ...d, bgImage: productImgMap[d.id] ?? d.bgImage }));
 
   /* lock body scroll */
   useEffect(() => {
@@ -535,6 +539,16 @@ function SelectorCard({ card, onClick }) {
 
 /* ─── Main export ────────────────────────────────────────────────────────── */
 export default function GetCareSection() {
+  const { products } = useProducts();
+  const productImgMap = useMemo(() => {
+    const map = {};
+    products.forEach(p => {
+      const cardImg = (p.images ?? []).find(img => img.imageType === 'card')?.imageUrl ?? null;
+      if (cardImg) map[p.id] = cardImg;
+    });
+    return map;
+  }, [products]);
+
   const [isMobile, setIsMobile] = useState(
     () => typeof window !== 'undefined' && window.innerWidth < 768,
   );
@@ -633,6 +647,7 @@ export default function GetCareSection() {
             key={activeId}
             focusId={activeId}
             focusLabel={activeLabel}
+            productImgMap={productImgMap}
             onClose={close}
           />
         )}

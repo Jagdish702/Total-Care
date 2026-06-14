@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useWorksWithImages } from '../../hooks/useWorksWithImages';
 
 /* ─── Figma asset URLs (node 1165:17820) ─────────────────────────────────────── */
 const imgBpCard        = 'https://www.figma.com/api/mcp/asset/72696a29-93e3-48b7-91df-0a838e5491a0';
@@ -101,7 +102,7 @@ function CartIcon() {
 }
 
 /* ─── Product detail panel ───────────────────────────────────────────────────── */
-function ProductPanel({ product }) {
+function ProductPanel({ product, cardImage }) {
   const navigate = useNavigate();
 
   return (
@@ -117,7 +118,7 @@ function ProductPanel({ product }) {
                         shadow-[inset_0px_0px_6px_0px_rgba(0,65,114,0.24)]"
              style={{ aspectRatio: '428 / 444' }}>
           <img
-            src={product.cardImage}
+            src={cardImage}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover"
           />
@@ -369,7 +370,9 @@ function ProductPanel({ product }) {
 /* ─── WorksWithTotalCareSection ──────────────────────────────────────────────── */
 export default function WorksWithTotalCareSection() {
   const [activeTab, setActiveTab] = useState(0);
-  const product = PRODUCTS[activeTab];
+  const product    = PRODUCTS[activeTab];
+  const cardImages = useWorksWithImages();
+  const cardImage  = cardImages[product.id] || product.cardImage;
 
   return (
     <section className="bg-white w-full">
@@ -426,7 +429,7 @@ export default function WorksWithTotalCareSection() {
 
         {/* ── RIGHT: Product detail panel ── */}
         <div className="flex-1 min-w-0 w-full">
-          <ProductPanel key={activeTab} product={product} />
+          <ProductPanel key={activeTab} product={product} cardImage={cardImage} />
         </div>
 
       </div>

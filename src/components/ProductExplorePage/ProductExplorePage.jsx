@@ -72,7 +72,7 @@ export default function ProductExplorePage() {
 
   // Prefer GCP hero image from API; fall back to static local import
   const heroImage = product
-    ? ((product.images ?? []).find(img => img.imageType === 'hero')?.imageUrl ?? PRODUCT_HERO_IMAGES[product.id] ?? null)
+    ? ((product.images ?? []).find(img => img.imageType === 'explore_hero')?.imageUrl ?? PRODUCT_HERO_IMAGES[product.id] ?? null)
     : null;
   const productWithImage = product
     ? { ...product, image: heroImage }

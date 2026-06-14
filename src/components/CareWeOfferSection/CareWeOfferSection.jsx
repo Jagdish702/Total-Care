@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useDemoVitals } from '../../hooks/useDemoVitals';
+import { useCareServices } from '../../hooks/useCareServices';
 import { CardDivider } from '../shared/CardPrimitives';
 
 // ── Card background photos ─────────────────────────────────────────────────
@@ -58,6 +60,18 @@ import icoHConcierge from '../../assets/hero/icons/ico-concierge.svg';
 import icoContact    from '../../assets/hero/icons/ico-contact.svg';
 import chartHeart    from '../../assets/hero/icons/chart-heart.svg';
 import chartLine     from '../../assets/hero/icons/chart-generic.svg';
+
+const E_ICON_MAP  = { icoHeart, icoGlucose, icoPerson, icoSleep };
+const E_CHART_MAP = { heart: chartHeart, line: chartLine };
+
+const TESTIMONIAL_PHOTO_MAP = {
+  doctor:    careTestimonial,
+  ai:        careTestimonialAjay,
+  concierge: careTestimonialSunita,
+  diet:      careTestimonialAjay2,
+  device:    careTestimonialVikas,
+  medicines: careTestimonialRuchi,
+};
 
 // ── Gradient overlays ──────────────────────────────────────────────────────
 const GRAD_COLLAPSED = {
@@ -164,59 +178,45 @@ function ETestimonial({ photo, name, badge, quote }) {
 // ── Shared vitals panel (Doctor + Concierge) ───────────────────────────────
 
 function EVitalsGroup() {
+  const { vitals } = useDemoVitals();
+  const row1 = vitals.slice(0, 2);
+  const row2 = vitals.slice(2, 4);
+
+  function EVPanel({ v }) {
+    const icon  = E_ICON_MAP[v.iconName]  ?? icoHeart;
+    const chart = E_CHART_MAP[v.chartType] ?? chartLine;
+    return (
+      <EStatPanel className="flex-1">
+        <div className="flex flex-col gap-[8px]">
+          <ETag icon={icon} label={v.label} />
+          <div className="flex items-end justify-between">
+            {v.value2 ? (
+              <div className="flex items-end gap-[3px]">
+                <span className="font-inter font-medium text-[20px] leading-normal text-black">{v.value}</span>
+                <span className="font-inter font-medium text-[11px] leading-[18px] text-[#4d4d4d]">{v.unit}</span>
+                <span className="font-inter font-medium text-[20px] leading-normal text-black">{v.value2}</span>
+                <span className="font-inter font-medium text-[11px] leading-[18px] text-[#4d4d4d]">{v.unit2}</span>
+              </div>
+            ) : (
+              <EStat num={v.value} unit={v.unit} />
+            )}
+            <ESparkline src={chart} />
+          </div>
+        </div>
+      </EStatPanel>
+    );
+  }
+
   return (
     <EGlassOuter>
       <div className="flex gap-[8px]">
-        <EStatPanel className="flex-1">
-          <div className="flex flex-col gap-[8px]">
-            <ETag icon={icoHeart} label="Heart Rate" />
-            <div className="flex items-end justify-between">
-              <EStat num="98" unit="BPM" />
-              <ESparkline src={chartHeart} />
-            </div>
-          </div>
-        </EStatPanel>
-        <EStatPanel className="flex-1">
-          <div className="flex flex-col gap-[8px]">
-            <ETag icon={icoGlucose} label="Glucose" />
-            <div className="flex items-end justify-between">
-              <EStat num="92" unit="mg/dL" />
-              <ESparkline src={chartLine} />
-            </div>
-          </div>
-        </EStatPanel>
+        {row1.map(v => <EVPanel key={v.id} v={v} />)}
       </div>
-
       <CardDivider />
-
       <div className="flex gap-[8px]">
-        <EStatPanel className="flex-1">
-          <div className="flex flex-col gap-[8px]">
-            <ETag icon={icoPerson} label="Blood pressure" />
-            <div className="flex items-end justify-between">
-              <EStat num="98" unit="BPM" />
-              <ESparkline src={chartLine} />
-            </div>
-          </div>
-        </EStatPanel>
-        <EStatPanel className="flex-1">
-          <div className="flex flex-col gap-[8px]">
-            <ETag icon={icoSleep} label="Sleep" />
-            <div className="flex items-end justify-between">
-              <div className="flex items-end gap-[3px]">
-                <span className="font-inter font-medium text-[20px] leading-normal text-black">8</span>
-                <span className="font-inter font-medium text-[11px] leading-[18px] text-[#4d4d4d]">Hr</span>
-                <span className="font-inter font-medium text-[20px] leading-normal text-black">43</span>
-                <span className="font-inter font-medium text-[11px] leading-[18px] text-[#4d4d4d]">Min</span>
-              </div>
-              <ESparkline src={chartLine} />
-            </div>
-          </div>
-        </EStatPanel>
+        {row2.map(v => <EVPanel key={v.id} v={v} />)}
       </div>
-
       <CardDivider />
-
       <p className="font-inter font-medium text-[11px] leading-[16px] tracking-[0.35px] text-[#4d4d4d] text-center">
         vitals synced from the devices
       </p>
@@ -572,17 +572,17 @@ function MedicinesExpandedPanels() {
   );
 }
 
-// ── Card data ──────────────────────────────────────────────────────────────
+// ── Card data (static visual assets only — text comes from useCareServices) ─
 const CARDS = [
   {
     id: 'doctor',
-    label: 'Family Doctor Consultation',
     icon: icoDoctor,
-    renderBg() {
+    inline: true,
+    renderBg(imageUrl) {
       return (
         <>
           <img
-            src={careCard1}
+            src={imageUrl ?? careCard1}
             alt="" aria-hidden
             className="absolute inset-0 w-full h-full object-cover max-w-none"
           />
@@ -597,12 +597,12 @@ const CARDS = [
         </>
       );
     },
-    renderExpandedBg() {
+    renderExpandedBg(imageUrl) {
       return (
         <>
           <div className="absolute inset-0 overflow-hidden">
             <img
-              src={careCard1Ex1}
+              src={imageUrl ?? careCard1Ex1}
               alt="" aria-hidden
               className="absolute max-w-none"
               style={{ height: '107.72%', left: '-17.81%', top: '-7.73%', width: '117.8%' }}
@@ -619,78 +619,50 @@ const CARDS = [
         </>
       );
     },
-    headline: 'Every Consultation starts ',
-    accent: 'with your data',
-    inline: true,
-    expandedBullets: [
-      'General physician consultation within 6 hours.',
-      'Specialist consultation within 48 hours.',
-      'Medical history, trends, Synced. Analysed. Ready.',
-      'So the doctor focuses on decisions, not data collection.',
-    ],
     ExpandedPanels: DoctorExpandedPanels,
-    expandedPanelTop: 96,
-    expandedBulletsTop: 470,
     expandedBulletsWidth: 'w-[721px]',
   },
   {
     id: 'ai',
-    label: 'AI Health Companion',
     icon: icoAi,
-    renderBg() {
-      return (
-        <div className="absolute inset-0 overflow-hidden">
-          <img
-            src={careCard2}
-            alt="" aria-hidden
-            className="absolute h-full max-w-none"
-            style={{ left: '-21.84%', top: '-0.01%', width: '200.16%' }}
-          />
-        </div>
-      );
-    },
-    renderExpandedBg() {
+    renderBg(imageUrl) {
       return (
         <img
-          src={card2Exp}
+          src={imageUrl ?? careCard2}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
       );
     },
-    headline: 'Your health, analysed.',
-    accent: "Before it's a problem",
-    expandedBullets: [
-      'Tracks patterns. Spots risks early.',
-      'Nudges you before things go wrong.',
-      'Converts abstract health goals into measurable metrics.',
-    ],
+    renderExpandedBg(imageUrl) {
+      return (
+        <img
+          src={imageUrl ?? card2Exp}
+          alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover max-w-none"
+        />
+      );
+    },
     ExpandedPanels: AiExpandedPanels,
-    expandedPanelTop: 348,
-    expandedBulletsTop: 529,
     expandedBulletsWidth: 'w-[709px]',
   },
   {
     id: 'concierge',
-    label: 'Concierge & Emergency services',
     icon: icoConcierge,
-    renderBg() {
+    renderBg(imageUrl) {
       return (
-        <div className="absolute inset-0 overflow-hidden">
-          <img
-            src={careCard3}
-            alt="" aria-hidden
-            className="absolute h-full max-w-none top-0"
-            style={{ left: '-92.45%', width: '234.92%' }}
-          />
-        </div>
+        <img
+          src={imageUrl ?? careCard3}
+          alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover max-w-none"
+        />
       );
     },
-    renderExpandedBg() {
+    renderExpandedBg(imageUrl) {
       return (
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src={careCard3}
+            src={imageUrl ?? careCard3}
             alt="" aria-hidden
             className="absolute h-full max-w-none top-0"
             style={{ left: '-6.95%', width: '106.94%' }}
@@ -698,73 +670,50 @@ const CARDS = [
         </div>
       );
     },
-    headline: 'Help arrives,',
-    accent: 'Before panic does',
-    expandedBullets: [
-      'Concierge and Ambulance arrives within 30 minutes.',
-      'Help is triggered before you react',
-      'Real support. Not just alerts',
-    ],
     ExpandedPanels: ConciergeExpandedPanels,
-    expandedPanelTop: 105,
-    expandedBulletsTop: 502,
     expandedBulletsWidth: 'w-[500px]',
   },
   {
     id: 'diet',
-    label: 'Smart Diet Plan',
     icon: icoDiet,
-    renderBg() {
+    renderBg(imageUrl) {
       return (
         <img
-          src={card4Exp}
+          src={imageUrl ?? card4Exp}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
       );
     },
-    renderExpandedBg() {
+    renderExpandedBg(imageUrl) {
       return (
         <img
-          src={careCard4}
+          src={imageUrl ?? careCard4}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
       );
     },
-    headline: 'Diet that thinks',
-    accent: 'Before you eat.',
-    expandedBullets: [
-      'Builds your health context from daily activity patterns and medical history (medications, allergies).',
-      'Dynamic meal planning based on evolving health goals.',
-      'No guesswork. No generic plans. Automated, goal-aligned nutritional planning.',
-    ],
     ExpandedPanels: DietExpandedPanels,
-    expandedPanelTop: 282,
-    expandedBulletsTop: 470,
     expandedBulletsWidth: 'w-[704px]',
   },
   {
     id: 'device',
-    label: 'Device Integrations',
     icon: icoDevice,
-    renderBg() {
+    renderBg(imageUrl) {
       return (
-        <div className="absolute inset-0 overflow-hidden">
-          <img
-            src={careCard5}
-            alt="" aria-hidden
-            className="absolute max-w-none"
-            style={{ height: '119.25%', left: '-69.21%', top: '-19.21%', width: '238.5%' }}
-          />
-        </div>
+        <img
+          src={imageUrl ?? careCard5}
+          alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover max-w-none"
+        />
       );
     },
-    renderExpandedBg() {
+    renderExpandedBg(imageUrl) {
       return (
         <>
           <img
-            src={careCard5Exp}
+            src={imageUrl ?? careCard5Exp}
             alt="" aria-hidden
             className="absolute inset-0 w-full h-full object-cover max-w-none"
           />
@@ -779,50 +728,31 @@ const CARDS = [
         </>
       );
     },
-    headline: 'Stop Tracking,',
-    accent: 'Start Understanding',
-    expandedBullets: [
-      'Multiple devices. One system',
-      'Signals combined, not scattered',
-      'Patterns you can actually act on',
-    ],
     ExpandedPanels: DeviceExpandedPanels,
-    expandedPanelTop: 286,
-    expandedBulletsTop: 528,
     expandedBulletsWidth: 'w-[650px]',
   },
   {
     id: 'medicines',
-    label: 'Medicines and Lab tests',
     icon: icoMedicine,
-    renderBg() {
+    renderBg(imageUrl) {
       return (
         <img
-          src={card6Default}
+          src={imageUrl ?? card6Default}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
       );
     },
-    renderExpandedBg() {
+    renderExpandedBg(imageUrl) {
       return (
         <img
-          src={card6Expand}
+          src={imageUrl ?? card6Expand}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
       );
     },
-    headline: 'Medicines & Lab Tests',
-    accent: 'Care Without Delays',
-    expandedBullets: [
-      'CureBay Guarantee: Medicines delivered within 3 hours.',
-      'Home test sample collection.',
-      'Without delays. Without confusion.',
-    ],
     ExpandedPanels: MedicinesExpandedPanels,
-    expandedPanelTop: 148,
-    expandedBulletsTop: 510,
     expandedBulletsWidth: 'w-[650px]',
   },
 ];
@@ -1085,75 +1015,14 @@ function MMedicinePanel() {
   );
 }
 
-// ── Mobile card data ──────────────────────────────────────────────────────
+// ── Mobile card data (static visual assets only — text comes from useCareServices) ─
 const MOBILE_CARE_CARDS = [
-  {
-    id: 'doctor',
-    src: careCard1,
-    icon: icoDoctor,
-    label: 'Family Doctor Consultation',
-    headline: 'Every Consultation starts ',
-    accent: 'with your data',
-    inline: true,
-    description: 'Care that shows up when you need it most. Connect with the right doctor, without the wait. With your story already understood, conversations feel easier, decisions feel clearer—and you feel taken care of.',
-    testimonialProps: { photo: careTestimonial, name: 'Kartik Varma', badge: 'Specialist Consultation', quote: "TotalCare and Dr.Neha Joshi came to my life as my god's angles, making my life healthier one click away" },
-    Panel: MDoctorPanel,
-  },
-  {
-    id: 'ai',
-    src: careCard2,
-    icon: icoAi,
-    label: 'AI Health Companion',
-    headline: 'Your health, analysed.',
-    accent: "Before it's a problem",
-    description: 'Care that stays one step ahead. By spotting patterns early, it turns complexity into clear actions—so you move forward with confidence.',
-    testimonialProps: { photo: careTestimonialAjay, name: 'Ajay Dogra', badge: 'AI powered Health Tracking', quote: "TotalCare's AI is basically a divine protector for my vitals. It's like having a guardian angel who also happens to be a data scientist." },
-    Panel: MAiPanel,
-  },
-  {
-    id: 'concierge',
-    src: careCard3,
-    icon: icoConcierge,
-    label: 'Concierge & Emergency services',
-    headline: 'Help arrives,',
-    accent: 'Before panic does',
-    description: 'From rapid ambulance support to real-time intervention, help is already on the way—when seconds matter most. No waiting, no uncertainty. Just immediate, reliable care when you need it most.',
-    testimonialProps: { photo: careTestimonialSunita, name: 'Sunita Sharma', badge: 'Ambulance Services', quote: "As someone who stays on top of their health, TotalCare adds a layer of reassurance I didn't know I needed." },
-    Panel: MConciergePanel,
-  },
-  {
-    id: 'diet',
-    src: card4Exp,
-    icon: icoDiet,
-    label: 'Smart Diet Plan',
-    headline: 'Diet that thinks',
-    accent: 'Before you eat.',
-    description: 'Care that adapts to how you live, eat, and feel. Built around your habits, medical history, and goals, so every meal has a purpose. No rigid charts, no one-size-fits-all plans. Just smart, evolving nutrition that fits your life.',
-    testimonialProps: { photo: careTestimonialAjay2, name: 'Ajay Dogra', badge: 'Data Backed Diet Plan', quote: "TotalCare's AI is basically a divine protector for my vitals. It's like having a guardian angel who also happens to be a data scientist." },
-    Panel: MDietPanel,
-  },
-  {
-    id: 'device',
-    src: careCard5,
-    icon: icoDevice,
-    label: 'Device Integrations',
-    headline: 'Stop Tracking,',
-    accent: 'Start Understanding',
-    description: 'Care that connects every signal into one clear story. From wearables to health apps, your data flows into a single system—so nothing gets lost. No scattered insights, no manual tracking.',
-    testimonialProps: { photo: careTestimonialVikas, name: 'Vikas Basu', badge: 'Activity Tracking', quote: "TotalCare's AI acts as a vigilant overseer for my health metrics. It's akin to having a watchful guardian who is also an expert in data analysis." },
-    Panel: MDevicePanel,
-  },
-  {
-    id: 'medicines',
-    src: card6Default,
-    icon: icoMedicine,
-    label: 'Medicines and Lab tests',
-    headline: 'Medicines & Lab Tests',
-    accent: 'Care Without Delays',
-    description: 'Care that moves as fast as your needs. From prescriptions to diagnostics, everything is handled end-to-end—right from your home. No delays, no confusion. Just timely care that shows up when it matters most.',
-    testimonialProps: { photo: careTestimonialRuchi, name: 'Ruchi Mehta', badge: 'At Home Lab Tests', quote: "TotalCare's AI serves as a diligent monitor for my lab results. It's like having a knowledgeable guardian who specializes in medical data analysis." },
-    Panel: MMedicinePanel,
-  },
+  { id: 'doctor',    src: careCard1,    icon: icoDoctor,    inline: true, Panel: MDoctorPanel },
+  { id: 'ai',        src: careCard2,    icon: icoAi,                      Panel: MAiPanel },
+  { id: 'concierge', src: careCard3,    icon: icoConcierge,               Panel: MConciergePanel },
+  { id: 'diet',      src: card4Exp,     icon: icoDiet,                    Panel: MDietPanel },
+  { id: 'device',    src: careCard5,    icon: icoDevice,                  Panel: MDevicePanel },
+  { id: 'medicines', src: card6Default, icon: icoMedicine,                Panel: MMedicinePanel },
 ];
 
 // ── MobileCareCard ─────────────────────────────────────────────────────────
@@ -1340,7 +1209,7 @@ function MobileCareCard({
 }
 
 // ── MobileCareWeOfferSection ───────────────────────────────────────────────
-function MobileCareWeOfferSection() {
+function MobileCareWeOfferSection({ serviceMap }) {
   const [expandedId, setExpandedId] = useState(null);
   const toggle = (id) => setExpandedId((prev) => (prev === id ? null : id));
 
@@ -1363,14 +1232,30 @@ function MobileCareWeOfferSection() {
 
       {/* Stacked cards */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {MOBILE_CARE_CARDS.map((card) => (
-          <MobileCareCard
-            key={card.id}
-            {...card}
-            isExpanded={expandedId === card.id}
-            onToggle={() => toggle(card.id)}
-          />
-        ))}
+        {MOBILE_CARE_CARDS.map((card) => {
+          const svc = serviceMap[card.id] ?? {};
+          const t = (svc.testimonials ?? [])[0];
+          const testimonialProps = t ? {
+            photo: t.photoUrl ?? TESTIMONIAL_PHOTO_MAP[card.id] ?? careTestimonial,
+            name: t.personName,
+            badge: t.badgeText,
+            quote: t.quote,
+          } : undefined;
+          return (
+            <MobileCareCard
+              key={card.id}
+              {...card}
+              src={svc.imageUrl ?? card.src}
+              label={svc.label ?? card.id}
+              headline={svc.headline ?? ''}
+              accent={svc.accentText ?? ''}
+              description={svc.description ?? ''}
+              testimonialProps={testimonialProps}
+              isExpanded={expandedId === card.id}
+              onToggle={() => toggle(card.id)}
+            />
+          );
+        })}
       </div>
     </section>
   );
@@ -1383,6 +1268,8 @@ function OfferingCard({
   icon,
   renderBg,
   renderExpandedBg,
+  imageUrl,
+  expandedImageUrl,
   headline,
   accent,
   inline,
@@ -1407,11 +1294,11 @@ function OfferingCard({
       {/* ── Background layers ──────────────────────────────────────────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-[40px]">
         <div className={`absolute inset-0 transition-opacity duration-300 ${expanded ? 'opacity-0' : 'opacity-100'}`}>
-          {renderBg()}
+          {renderBg(imageUrl)}
         </div>
         {renderExpandedBg && (
           <div className={`absolute inset-0 transition-opacity duration-300 ${expanded ? 'opacity-100' : 'opacity-0'}`}>
-            {renderExpandedBg()}
+            {renderExpandedBg(expandedImageUrl)}
           </div>
         )}
         <div
@@ -1536,6 +1423,12 @@ function OfferingCard({
 // ── Section ────────────────────────────────────────────────────────────────
 
 export default function CareWeOfferSection() {
+  const { services } = useCareServices();
+  const serviceMap = useMemo(
+    () => Object.fromEntries(services.map(s => [s.id, s])),
+    [services],
+  );
+
   const scrollRef  = useRef(null);
   const [expandedId, setExpandedId] = useState(null);
   const [isMobile, setIsMobile]     = useState(
@@ -1548,7 +1441,7 @@ export default function CareWeOfferSection() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  if (isMobile) return <MobileCareWeOfferSection />;
+  if (isMobile) return <MobileCareWeOfferSection serviceMap={serviceMap} />;
 
   const scroll = (dir) => {
     scrollRef.current?.scrollBy({ left: dir * 648, behavior: 'smooth' });
@@ -1631,14 +1524,28 @@ export default function CareWeOfferSection() {
           className="flex gap-[48px] items-start overflow-x-auto"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {CARDS.map((card) => (
-            <OfferingCard
-              key={card.id}
-              {...card}
-              expanded={expandedId === card.id}
-              onToggle={() => toggleCard(card.id)}
-            />
-          ))}
+          {CARDS.map((card) => {
+            const svc = serviceMap[card.id] ?? {};
+            const headline = svc.headline ?? '';
+            const accent   = svc.accentText ?? '';
+            const expandedBullets = (svc.features ?? []).map(f => f.featureText);
+            return (
+              <OfferingCard
+                key={card.id}
+                {...card}
+                label={svc.label ?? card.id}
+                headline={card.inline ? headline + ' ' : headline}
+                accent={accent}
+                expandedBullets={expandedBullets}
+                expandedPanelTop={svc.expandedPanelTop ?? 96}
+                expandedBulletsTop={svc.expandedBulletsTop ?? 470}
+                imageUrl={svc.imageUrl ?? null}
+                expandedImageUrl={svc.expandedImageUrl ?? null}
+                expanded={expandedId === card.id}
+                onToggle={() => toggleCard(card.id)}
+              />
+            );
+          })}
           <div className="flex-shrink-0 w-[120px]" aria-hidden />
         </div>
       </div>

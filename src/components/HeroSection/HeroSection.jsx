@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDemoVitals } from '../../hooks/useDemoVitals';
+import { useHeroSection } from '../../hooks/useHeroSection';
 import { CardTag, CardStat, StatNum, StatUnit, CardDivider, GlassPanel } from '../shared/CardPrimitives';
 
 // ── Primary visuals ────────────────────────────────────────────────────────
@@ -25,6 +27,9 @@ import icoConcierge from '../../assets/hero/icons/ico-concierge.svg';
 import icoContact   from '../../assets/hero/icons/ico-contact.svg';
 import chartHeart   from '../../assets/hero/icons/chart-heart.svg';
 import chartLine    from '../../assets/hero/icons/chart-generic.svg';
+
+const DEMO_VITAL_ICON_MAP = { icoHeart, icoGlucose, icoPerson, icoSleep };
+const DEMO_CHART_MAP      = { heart: chartHeart, line: chartLine };
 
 // ── Figma desktop visual dimensions (px) ──────────────────────────────────
 const VISUAL_W = 1251.976;
@@ -59,7 +64,9 @@ function GlassOuter({ style, animDelay = 0, children }) {
 }
 
 /** Top-left: Medical records (Prescriptions · Lab tests · Allergies) */
-function RecordsCard({ animDelay = 0 }) {
+function RecordsCard({ animDelay = 0, prescriptionsCount, labTestsCount, allergiesCount, allergyItems }) {
+  const col1 = allergyItems.slice(0, 2);
+  const col2 = allergyItems.slice(2, 4);
   return (
     <GlassOuter style={{ left: '59.99px', top: '72.16px', width: '330.624px' }} animDelay={animDelay}>
       <div className="flex gap-[10.199px] items-start w-full">
@@ -67,7 +74,7 @@ function RecordsCard({ animDelay = 0 }) {
           <div className="flex flex-col gap-[11.378px]">
             <CardTag icon={icoRx} label="Prescriptions" />
             <CardStat>
-              <StatNum>15</StatNum>
+              <StatNum>{prescriptionsCount}</StatNum>
               <StatUnit>Records</StatUnit>
             </CardStat>
           </div>
@@ -76,7 +83,7 @@ function RecordsCard({ animDelay = 0 }) {
           <div className="flex flex-col gap-[11.378px]">
             <CardTag icon={icoLab} label="Lab tests" />
             <CardStat>
-              <StatNum>9</StatNum>
+              <StatNum>{labTestsCount}</StatNum>
               <StatUnit>Records</StatUnit>
             </CardStat>
           </div>
@@ -87,18 +94,16 @@ function RecordsCard({ animDelay = 0 }) {
         <div className="flex flex-col gap-[11.378px]">
           <CardTag icon={icoAllergy} label="Allergies" />
           <CardStat>
-            <StatNum>4</StatNum>
+            <StatNum>{allergiesCount}</StatNum>
             <StatUnit>Records</StatUnit>
           </CardStat>
         </div>
         <div className="font-inter font-medium text-[9.55px] leading-[15.91px] tracking-[0.309px] text-[#4d4d4d] flex gap-[9.547px]">
           <ul className="list-disc ml-[14px]">
-            <li>Penicillin</li>
-            <li>Plant's oil (urushiol)</li>
+            {col1.map((item, i) => <li key={i}>{item}</li>)}
           </ul>
           <ul className="list-disc ml-[14px]">
-            <li>Cephalosporins</li>
-            <li>Aspirin</li>
+            {col2.map((item, i) => <li key={i}>{item}</li>)}
           </ul>
         </div>
       </GlassPanel>
@@ -108,40 +113,36 @@ function RecordsCard({ animDelay = 0 }) {
 
 /** Top-right: Live vitals */
 function VitalsCard({ animDelay = 0 }) {
+  const { vitals } = useDemoVitals();
+  const row1 = vitals.slice(0, 2);
+  const row2 = vitals.slice(2, 4);
+
+  function VitalPanel({ v }) {
+    const icon  = DEMO_VITAL_ICON_MAP[v.iconName] ?? icoHeart;
+    const chart = DEMO_CHART_MAP[v.chartType]     ?? chartLine;
+    return (
+      <GlassPanel className="flex flex-1 items-center justify-between p-[11.378px]">
+        <div className="flex flex-col gap-[11.378px]">
+          <CardTag icon={icon} label={v.label} />
+          <CardStat>
+            <StatNum>{v.value}</StatNum>
+            {v.unit  && <StatUnit>{v.unit}</StatUnit>}
+            {v.value2 && <><StatNum>{v.value2}</StatNum><StatUnit>{v.unit2}</StatUnit></>}
+          </CardStat>
+        </div>
+        <img src={chart} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
+      </GlassPanel>
+    );
+  }
+
   return (
     <GlassOuter style={{ left: '830.3px', top: '69.55px', width: '347.734px' }} animDelay={animDelay}>
       <div className="flex gap-[10.199px] items-start w-full">
-        <GlassPanel className="flex flex-1 items-center justify-between p-[11.378px]">
-          <div className="flex flex-col gap-[11.378px]">
-            <CardTag icon={icoHeart} label="Heart Rate" />
-            <CardStat><StatNum>98</StatNum><StatUnit>BPM</StatUnit></CardStat>
-          </div>
-          <img src={chartHeart} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-        </GlassPanel>
-        <GlassPanel className="flex flex-1 items-center justify-between p-[11.378px]">
-          <div className="flex flex-col gap-[11.378px]">
-            <CardTag icon={icoGlucose} label="Glucose" />
-            <CardStat><StatNum>92</StatNum><StatUnit>mg/dL</StatUnit></CardStat>
-          </div>
-          <img src={chartLine} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-        </GlassPanel>
+        {row1.map(v => <VitalPanel key={v.id} v={v} />)}
       </div>
       <CardDivider />
       <div className="flex gap-[10.199px] items-start w-full">
-        <GlassPanel className="flex flex-1 items-center justify-between p-[11.378px]">
-          <div className="flex flex-col gap-[11.378px]">
-            <CardTag icon={icoPerson} label="Blood pressure" />
-            <CardStat><StatNum>98</StatNum><StatUnit>BPM</StatUnit></CardStat>
-          </div>
-          <img src={chartLine} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-        </GlassPanel>
-        <GlassPanel className="flex flex-1 items-center justify-between p-[11.378px]">
-          <div className="flex flex-col gap-[11.378px]">
-            <CardTag icon={icoSleep} label="Sleep" />
-            <CardStat><StatNum>8</StatNum><StatUnit>Hr</StatUnit><StatNum>43</StatNum><StatUnit>Min</StatUnit></CardStat>
-          </div>
-          <img src={chartLine} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-        </GlassPanel>
+        {row2.map(v => <VitalPanel key={v.id} v={v} />)}
       </div>
       <CardDivider />
       <p className="font-inter font-medium text-[8.53px] leading-[14.222px] tracking-[0.276px] text-[#4d4d4d] text-center w-full">
@@ -152,17 +153,17 @@ function VitalsCard({ animDelay = 0 }) {
 }
 
 /** Middle-right: Emergency */
-function EmergencyCard({ animDelay = 0 }) {
+function EmergencyCard({ animDelay = 0, ambulanceTime, conciergeTime, contactName, contactRelation }) {
   return (
     <GlassOuter style={{ left: '905.94px', top: '319.95px', width: '312.895px' }} animDelay={animDelay}>
       <div className="flex gap-[10.199px] items-start w-full">
         <GlassPanel className="flex flex-1 flex-col gap-[11.378px] p-[11.378px]">
           <CardTag icon={icoAmbulance} label="Ambulance" />
-          <CardStat><StatNum>30</StatNum><StatUnit>mins to arrive</StatUnit></CardStat>
+          <CardStat><StatNum>{ambulanceTime}</StatNum><StatUnit>mins to arrive</StatUnit></CardStat>
         </GlassPanel>
         <GlassPanel className="flex flex-1 flex-col gap-[11.378px] p-[11.378px]">
           <CardTag icon={icoConcierge} label="Concierge" />
-          <CardStat><StatNum>30</StatNum><StatUnit>mins to arrive</StatUnit></CardStat>
+          <CardStat><StatNum>{conciergeTime}</StatNum><StatUnit>mins to arrive</StatUnit></CardStat>
         </GlassPanel>
       </div>
       <CardDivider />
@@ -170,8 +171,8 @@ function EmergencyCard({ animDelay = 0 }) {
         <div className="flex flex-col gap-[11.378px] flex-1">
           <CardTag icon={icoContact} label="Emergency Contact" />
           <div className="flex flex-col gap-[11.733px]">
-            <span className="font-inter font-medium text-[17.07px] leading-normal tracking-[0.277px] text-black">Aaditya</span>
-            <span className="font-inter font-medium text-[8.53px] leading-[14.222px] tracking-[0.276px] text-[#4d4d4d]">Son</span>
+            <span className="font-inter font-medium text-[17.07px] leading-normal tracking-[0.277px] text-black">{contactName}</span>
+            <span className="font-inter font-medium text-[8.53px] leading-[14.222px] tracking-[0.276px] text-[#4d4d4d]">{contactRelation}</span>
           </div>
         </div>
         <button
@@ -192,7 +193,8 @@ function EmergencyCard({ animDelay = 0 }) {
 }
 
 /** Middle-left: Nutrition tracker */
-function NutritionCard({ animDelay = 0 }) {
+function NutritionCard({ animDelay = 0, mealType, foodName, calories, calorieUnit, recommendation, recommendationTip, foodImageUrl }) {
+  const foodSrc = foodImageUrl || imgFood;
   return (
     <div
       className="absolute opacity-80 flex flex-col gap-[8.084px] items-center
@@ -204,29 +206,29 @@ function NutritionCard({ animDelay = 0 }) {
     >
       <div className="relative flex items-center justify-center h-[30.091px] w-full rounded-[17.067px] drop-shadow-[0px_1.422px_7.111px_rgba(0,65,114,0.08)] shrink-0 overflow-hidden">
         <div aria-hidden className="absolute bg-[rgba(255,255,255,0.8)] inset-0 pointer-events-none rounded-[17.067px]" />
-        <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1] relative">Breakfast</span>
+        <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1] relative">{mealType}</span>
         <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_1.422px_0px_rgba(0,65,114,0.12)]" />
       </div>
       <CardDivider />
       <div className="relative flex items-center overflow-hidden h-[80.842px] w-full rounded-[17.067px] shadow-[0px_1.422px_14.222px_0px_rgba(0,65,114,0.08)] shrink-0">
         <div aria-hidden className="absolute bg-[rgba(255,255,255,0.8)] inset-0 pointer-events-none rounded-[17.067px]" />
         <div className="flex flex-col gap-[11.378px] p-[17.067px] z-10 relative w-[93.642px]">
-          <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1]">Poha</span>
-          <CardStat><StatNum>320</StatNum><StatUnit>KCAL</StatUnit></CardStat>
+          <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1]">{foodName}</span>
+          <CardStat><StatNum>{calories}</StatNum><StatUnit>{calorieUnit}</StatUnit></CardStat>
         </div>
         <div
           className="absolute right-0 h-[157.642px] w-[135.411px] overflow-hidden rounded-bl-[1347.371px] rounded-tl-[1347.371px]"
           style={{ top: 'calc(50% + 4.04px)', transform: 'translateY(-50%)' }}
         >
-          <img src={imgFood} alt="Poha" className="w-full h-full object-cover" />
+          <img src={foodSrc} alt={foodName} className="w-full h-full object-cover" />
         </div>
         <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_1.422px_0px_rgba(0,65,114,0.12)]" />
       </div>
       <CardDivider />
       <div className="relative flex flex-col gap-[17.067px] p-[17.067px] w-full rounded-[17.067px] drop-shadow-[0px_1.422px_7.111px_rgba(0,65,114,0.08)] shrink-0">
         <div aria-hidden className="absolute bg-[rgba(255,255,255,0.8)] inset-0 pointer-events-none rounded-[17.067px]" />
-        <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1] whitespace-nowrap relative">Low Oil Recommended</span>
-        <span className="font-inter font-medium text-[8.53px] leading-[14.222px] tracking-[0.276px] text-[#4d4d4d] whitespace-nowrap relative">Keep peanuts light. Add veggies for fiber.</span>
+        <span className="font-inter font-medium text-[11.38px] leading-[19.911px] tracking-[0.369px] text-[#008eb1] whitespace-nowrap relative">{recommendation}</span>
+        <span className="font-inter font-medium text-[8.53px] leading-[14.222px] tracking-[0.276px] text-[#4d4d4d] whitespace-nowrap relative">{recommendationTip}</span>
         <div className="absolute inset-0 pointer-events-none rounded-[inherit] shadow-[inset_0px_0px_1.422px_0px_rgba(0,65,114,0.12)]" />
       </div>
     </div>
@@ -234,7 +236,8 @@ function NutritionCard({ animDelay = 0 }) {
 }
 
 /** Bottom-right: Auto Health Sync */
-function HealthSyncCard({ animDelay = 0 }) {
+function HealthSyncCard({ animDelay = 0, title, description, profileImageUrl }) {
+  const profileSrc = profileImageUrl || imgProfile;
   return (
     <div
       className="absolute opacity-80 flex flex-col items-center gap-[17.389px]"
@@ -244,12 +247,12 @@ function HealthSyncCard({ animDelay = 0 }) {
       }}
     >
       <div className="w-[122.589px] h-[126.067px] rounded-full overflow-hidden flex-shrink-0 shadow-[0px_1.739px_13.911px_0px_rgba(0,65,114,0.08)] shadow-[inset_0px_0px_1.739px_0px_rgba(0,65,114,0.16)]">
-        <img src={imgProfile} alt="" aria-hidden className="w-full h-full object-cover" />
+        <img src={profileSrc} alt="" aria-hidden className="w-full h-full object-cover" />
       </div>
       <div className="relative w-full flex flex-col items-center gap-[20.866px] p-[20.866px] rounded-[20.866px] bg-[rgba(255,255,255,0.8)] shadow-[0px_1.739px_17.389px_0px_rgba(0,65,114,0.08)] shadow-[inset_0px_0px_1.739px_0px_rgba(0,65,114,0.12)]">
-        <span className="font-inter font-medium text-[13.91px] leading-[24.344px] tracking-[0.451px] text-[#008eb1] whitespace-nowrap">Auto Health Sync</span>
+        <span className="font-inter font-medium text-[13.91px] leading-[24.344px] tracking-[0.451px] text-[#008eb1] whitespace-nowrap">{title}</span>
         <p className="font-inter font-medium text-[10.43px] leading-[17.389px] tracking-[0.338px] text-[#4d4d4d] text-center">
-          Connect Apple / Google Health connect for real-time tracking, no manual input.
+          {description}
         </p>
       </div>
     </div>
@@ -257,7 +260,8 @@ function HealthSyncCard({ animDelay = 0 }) {
 }
 
 /** Bottom-left: Health Devices */
-function HealthDevicesCard({ animDelay = 0 }) {
+function HealthDevicesCard({ animDelay = 0, title, description, devicesImageUrl }) {
+  const devicesSrc = devicesImageUrl || imgDevices;
   return (
     <div
       className="absolute opacity-80 flex flex-col items-center gap-[17.389px]"
@@ -266,11 +270,11 @@ function HealthDevicesCard({ animDelay = 0 }) {
         animation: `cardPopIn 0.55s cubic-bezier(0.34,1.56,0.64,1) ${animDelay}ms both`,
       }}
     >
-      <img src={imgDevices} alt="" aria-hidden className="w-[183.449px] h-[139.978px] object-cover opacity-80" />
+      <img src={devicesSrc} alt="" aria-hidden className="w-[183.449px] h-[139.978px] object-cover opacity-80" />
       <div className="relative w-full flex flex-col items-center gap-[20.866px] p-[20.866px] rounded-[20.866px] bg-[rgba(255,255,255,0.8)] shadow-[0px_1.739px_17.389px_0px_rgba(0,65,114,0.08)] shadow-[inset_0px_0px_1.739px_0px_rgba(0,65,114,0.12)]">
-        <span className="font-inter font-medium text-[13.91px] leading-[24.344px] tracking-[0.451px] text-[#008eb1] whitespace-nowrap">Health Devices</span>
+        <span className="font-inter font-medium text-[13.91px] leading-[24.344px] tracking-[0.451px] text-[#008eb1] whitespace-nowrap">{title}</span>
         <p className="font-inter font-medium text-[10.43px] leading-[17.389px] tracking-[0.338px] text-[#4d4d4d] text-center">
-          Save more, save care at low cost
+          {description}
         </p>
       </div>
     </div>
@@ -572,6 +576,7 @@ function MobileHealthDevicesCard() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroSection() {
+  const hero       = useHeroSection();
   const wrapperRef = useRef(null);
 
   const [scale, setScale] = useState(() =>
@@ -638,12 +643,43 @@ export default function HeroSection() {
             />
 
             {/* Floating UI cards — staggered pop-in */}
-            <RecordsCard       animDelay={0}   />
-            <VitalsCard        animDelay={150} />
-            <NutritionCard     animDelay={300} />
-            <EmergencyCard     animDelay={450} />
-            <HealthDevicesCard animDelay={600} />
-            <HealthSyncCard    animDelay={750} />
+            <RecordsCard
+              animDelay={0}
+              prescriptionsCount={hero.prescriptionsCount}
+              labTestsCount={hero.labTestsCount}
+              allergiesCount={hero.allergiesCount}
+              allergyItems={hero.allergyItems}
+            />
+            <VitalsCard animDelay={150} />
+            <NutritionCard
+              animDelay={300}
+              mealType={hero.nutritionMealType}
+              foodName={hero.nutritionFoodName}
+              calories={hero.nutritionCalories}
+              calorieUnit={hero.nutritionCalorieUnit}
+              recommendation={hero.nutritionRecommendation}
+              recommendationTip={hero.nutritionRecommendationTip}
+              foodImageUrl={hero.nutritionFoodImageUrl}
+            />
+            <EmergencyCard
+              animDelay={450}
+              ambulanceTime={hero.emergencyAmbulanceTime}
+              conciergeTime={hero.emergencyConciergeTime}
+              contactName={hero.emergencyContactName}
+              contactRelation={hero.emergencyContactRelation}
+            />
+            <HealthDevicesCard
+              animDelay={600}
+              title={hero.healthDevicesTitle}
+              description={hero.healthDevicesDescription}
+              devicesImageUrl={hero.healthDevicesImageUrl}
+            />
+            <HealthSyncCard
+              animDelay={750}
+              title={hero.healthSyncTitle}
+              description={hero.healthSyncDescription}
+              profileImageUrl={hero.healthSyncProfileImageUrl}
+            />
           </div>
         )}
       </div>
@@ -709,7 +745,7 @@ export default function HeroSection() {
           {/* Heading group */}
           <div className="flex flex-col items-center gap-6 text-center w-full">
 
-            {/* "Total Care" — Inter Black (900), responsive size, gradient image fill */}
+            {/* Title — Inter Black (900), responsive size, gradient image fill */}
             <h1
               className="font-inter leading-none tracking-[0] text-transparent
                          bg-clip-text bg-cover bg-center bg-no-repeat select-none"
@@ -719,10 +755,10 @@ export default function HeroSection() {
                 fontWeight: 900,
               }}
             >
-              Total Care
+              {hero.heading}
             </h1>
 
-            {/* Subtitle — two explicit lines, 16 px Bold, 24 px leading, gradient */}
+            {/* Subtitle */}
             <div
               className="font-inter font-bold text-transparent bg-clip-text text-center"
               style={{
@@ -733,12 +769,11 @@ export default function HeroSection() {
                   'linear-gradient(to bottom, rgba(0,2,101,0.6), rgba(80,32,255,0.6))',
               }}
             >
-              <p className="mb-0">Health Tracking meets</p>
-              <p>Real world Healthcare</p>
+              {hero.subheading}
             </div>
           </div>
 
-          {/* "View Plans" — full-width, 40 px tall, solid blue */}
+          {/* Primary CTA */}
           <button
             type="button"
             onClick={() => document.getElementById('subscription')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -751,10 +786,10 @@ export default function HeroSection() {
           >
             <span aria-hidden className="absolute inset-0 bg-[#004172] rounded-xl" />
             <span aria-hidden className="absolute inset-0 rounded-xl shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.08)]" />
-            <span className="relative">View Plans</span>
+            <span className="relative">{hero.ctaPrimary}</span>
           </button>
 
-          {/* "How it works" — full-width, 32 px tall, ghost (text only) */}
+          {/* Secondary CTA */}
           <button
             type="button"
             className="w-full flex items-center justify-center
@@ -763,7 +798,7 @@ export default function HeroSection() {
                        tracking-[0.2592px] leading-none
                        active:opacity-70 transition-opacity duration-150"
           >
-            How it works
+            {hero.ctaSecondary}
           </button>
         </div>
 
@@ -790,7 +825,7 @@ export default function HeroSection() {
                 fontSize: 'clamp(56px, 9vw, 120px)',
               }}
             >
-              Total Care
+              {hero.heading}
             </h1>
             <p
               className="font-inter font-bold leading-7 tracking-[0.5825px]
@@ -801,7 +836,7 @@ export default function HeroSection() {
                   'linear-gradient(to bottom, rgba(0,2,101,0.6), rgba(80,32,255,0.6))',
               }}
             >
-              Health Tracking meets Real world Healthcare
+              {hero.subheading}
             </p>
           </div>
 
@@ -817,7 +852,7 @@ export default function HeroSection() {
                          shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.08)]
                          hover:bg-[#00345b] transition-colors duration-150"
             >
-              View Plans
+              {hero.ctaPrimary}
             </button>
             <button
               type="button"
@@ -826,7 +861,7 @@ export default function HeroSection() {
                          px-4 py-3
                          hover:underline transition-all duration-150"
             >
-              How it Works
+              {hero.ctaSecondary}
             </button>
           </div>
 

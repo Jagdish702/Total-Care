@@ -93,6 +93,31 @@ export const statusCardsApi = {
   getById: (id)   => request(`/status-cards/${id}`),
 };
 
+// ── Demo Vitals ─────────────────────────────────────────────────
+export const demoVitalsApi = {
+  list: () => request('/demo-vitals'),
+};
+
+// ── Hero Section ─────────────────────────────────────────────────
+export const heroSectionApi = {
+  get: () => request('/hero-section'),
+};
+
+// ── Product Detail Tabs ─────────────────────────────────────────
+export const productDetailTabsApi = {
+  list: () => request('/product-detail-tabs'),
+};
+
+// ── Product Showcase Bullets ────────────────────────────────────
+export const productShowcaseBulletsApi = {
+  list: () => request('/product-showcase-bullets'),
+};
+
+// ── Works With Card Images ───────────────────────────────────────
+export const worksWithImagesApi = {
+  getAll: () => request('/works-with-images'),
+};
+
 // ── Orders ──────────────────────────────────────────────────────
 export const ordersApi = {
   create:       (body) => request('/orders', { method: 'POST', body: JSON.stringify(body) }),

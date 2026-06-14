@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { faqData } from './faqData';
+import { useFaqs } from '../../hooks/useFaqs';
+
+function normalizeAnswer(faq) {
+  if (faq.answerType === 'text') return faq.answerText ?? '';
+  if (faq.answerType === 'list') return (faq.listItems ?? []).map(i => i.itemText);
+  if (faq.answerType === 'steps') {
+    return {
+      steps: (faq.steps ?? []).map(s => ({
+        title: s.stepTitle,
+        items: (s.items ?? []).map(i => i.itemText),
+      })),
+    };
+  }
+  return faq.answerText ?? '';
+}
 
 /* ─── Answer content renderer ────────────────────────────────────────────── */
 const answerTextCls =
@@ -114,6 +128,13 @@ function FAQItem({ item, isOpen, onToggle, isLast }) {
 /* ─── FAQSection ──────────────────────────────────────────────────────────── */
 export default function FAQSection() {
   const [activeId, setActiveId] = useState(null);
+  const { faqs, loading } = useFaqs();
+
+  const items = faqs.map(faq => ({
+    id: faq.id,
+    question: faq.question,
+    answer: normalizeAnswer(faq),
+  }));
 
   const handleToggle = (id) =>
     setActiveId((prev) => (prev === id ? null : id));
@@ -149,13 +170,13 @@ export default function FAQSection() {
 
       {/* ── FAQ list ── */}
       <div className="flex flex-col w-full max-w-[1560px]">
-        {faqData.map((item, index) => (
+        {loading ? null : items.map((item, index) => (
           <FAQItem
             key={item.id}
             item={item}
             isOpen={activeId === item.id}
             onToggle={() => handleToggle(item.id)}
-            isLast={index === faqData.length - 1}
+            isLast={index === items.length - 1}
           />
         ))}
       </div>

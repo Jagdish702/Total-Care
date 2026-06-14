@@ -26,152 +26,7 @@ import glucoStep3Img from '../../assets/product-explore/how-it-works-gluco-step3
 import glucoStep4Img from '../../assets/product-explore/how-it-works-gluco-step4.png';
 import glucoStep5Img from '../../assets/product-explore/how-it-works-gluco-step5.png';
 
-/* ─── Step data ────────────────────────────────────────────────────────────── */
-
-const SCALE_STEPS = [
-  {
-    number: '1',
-    title: 'Step On',
-    description:
-      'Place the scale on a hard, flat surface. Step on with bare feet to ensure the electrodes can accurately measure impedance.',
-    image: scaleStep1Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '2',
-    title: 'Sync',
-    description:
-      'Open the Total Care app on your smartphone. The scale connects automatically via Bluetooth to transmit your data in real-time.',
-    image: scaleStep2Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '3',
-    title: 'Analyze',
-    description:
-      'Wait a few seconds for the scale to process. Your weight and other body metrics will appear instantly on the app dashboard.',
-    image: scaleStep3Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '4',
-    title: 'Track',
-    description:
-      'Save your results to visualize long-term trends. Compare your daily, weekly, or monthly progress to stay on top of your fitness goals.',
-    image: scaleStep4Img,
-    objectPosition: 'center',
-  },
-];
-
-const BP_STEPS = [
-  {
-    number: '1',
-    title: 'Wear',
-    description: 'Wrap the cuff around your arm and sit comfortably.',
-    image: bpStep1Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '2',
-    title: 'Measure',
-    description: 'Press start. The device captures accurate readings in seconds.',
-    image: bpStep2Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '3',
-    title: 'Sync',
-    description: 'Your data automatically syncs with the app.',
-    image: bpStep3Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '4',
-    title: 'Understand',
-    description: 'View trends, insights, and alerts in one place.',
-    image: bpStep4Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '5',
-    title: 'Act',
-    description: 'Get nudges to improve your daily habits.',
-    image: bpStep5Img,
-    objectPosition: 'center',
-  },
-];
-
-const GLUCOSE_STEPS = [
-  {
-    number: '1',
-    title: 'Prepare',
-    description: 'Wash and dry your hands and the lancing site.',
-    image: glucoStep1Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '2',
-    title: 'Insert',
-    description: 'Insert a test strip into the meter. It turns on automatically.',
-    image: glucoStep2Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '3',
-    title: 'Lance',
-    description: 'Use the lancing device to obtain a small blood droplet.',
-    image: glucoStep3Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '4',
-    title: 'Test',
-    description: 'Gently apply the blood drop to the edge of the test strip.',
-    image: glucoStep4Img,
-    objectPosition: 'center',
-  },
-  {
-    number: '5',
-    title: 'Read',
-    description: 'View your results on the large, backlit display in 5 seconds.',
-    image: glucoStep5Img,
-    objectPosition: 'center',
-  },
-];
-
-/* ─── Product → tab config (hardcoded fallback) ─────────────────────────────── */
-
-const PRODUCT_TABS = {
-  'complete-essentials': [
-    { label: 'Meditive Body Composition Scale', steps: SCALE_STEPS },
-    { label: 'Omron BP Monitor',               steps: BP_STEPS    },
-    { label: 'GlucoBuddy CGM',                 steps: GLUCOSE_STEPS },
-  ],
-  'bp-essentials': [
-    { label: 'Meditive Body Composition Scale', steps: SCALE_STEPS },
-    { label: 'Omron BP Monitor',               steps: BP_STEPS    },
-  ],
-  'diabetes-essentials': [
-    { label: 'Meditive Body Composition Scale', steps: SCALE_STEPS  },
-    { label: 'GlucoBuddy CGM',                 steps: GLUCOSE_STEPS },
-  ],
-  'scale': [
-    { label: 'Meditive Body Composition Scale', steps: SCALE_STEPS },
-  ],
-  'glucose': [
-    { label: 'GlucoBuddy CGM', steps: GLUCOSE_STEPS },
-  ],
-  'bp': [
-    { label: 'Omron BP Monitor', steps: BP_STEPS },
-  ],
-};
-
-const DEFAULT_TABS = [
-  { label: 'Meditive Body Composition Scale', steps: SCALE_STEPS },
-  { label: 'Omron BP Monitor',               steps: BP_STEPS    },
-];
-
-/* ─── Dynamic DB helpers ────────────────────────────────────────────────────── */
+/* ─── DB helpers ────────────────────────────────────────────────────────────── */
 
 // Maps product id → ordered step images (stays hardcoded)
 const STEP_IMAGES = {
@@ -196,13 +51,13 @@ function buildStepsFromDB(dbSteps, productId) {
     number: String(s.stepNumber ?? i + 1),
     title: s.title,
     description: s.description,
-    image: imgs[i] || null,
+    image: s.imageUrl ?? imgs[i] ?? null,
     objectPosition: 'center',
   }));
 }
 
 function buildTabsFromProduct(product) {
-  if (!product) return DEFAULT_TABS;
+  if (!product) return [];
 
   // Individual product with DB steps
   if ((product.howItWorksSteps ?? []).length > 0) {
@@ -223,8 +78,7 @@ function buildTabsFromProduct(product) {
     if (tabs.length > 0) return tabs;
   }
 
-  // Hardcoded fallback
-  return PRODUCT_TABS[product.id] || DEFAULT_TABS;
+  return [];
 }
 
 /* ─── HowItWorksSection ─────────────────────────────────────────────────────── */
@@ -234,6 +88,8 @@ export default function HowItWorksSection({ product }) {
 
   const [activeTab,  setActiveTab]  = useState(0);
   const [activeStep, setActiveStep] = useState(0);
+
+  if (tabs.length === 0) return null;
 
   // Touch swipe support
   const touchStartY  = useRef(null);

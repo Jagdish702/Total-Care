@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useProductDetailTabs } from '../../hooks/useProductDetailTabs';
+import { useProductShowcaseBullets } from '../../hooks/useProductShowcaseBullets';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -37,138 +39,47 @@ import iconBpMetric      from '../../assets/products/icons/blood pressure blue i
 import iconScaleMetric   from '../../assets/products/icons/weight machine blue icon.svg';
 import iconGlucoseMetric from '../../assets/products/icons/water drop box blue icon.svg';
 
-/* ─── Price lookup by productId ──────────────────────────────────────────── */
-const PRODUCT_PRICES = {
-  bp:      { price: 2000, originalPrice: 2560 },
-  scale:   { price: 1000, originalPrice: 2999 },
-  glucose: { price: 1000, originalPrice: 1600 },
+/* ─── Icon map: iconName string from DB → local SVG asset ────────────────── */
+const VITAL_ICON_MAP = {
+  iconHeartFill:     iconHeartFill,
+  iconGlucoseStat:   iconGlucoseStat,
+  iconPerson:        iconPerson,
+  iconSleep:         iconSleep,
+  iconBpMetric:      iconBpMetric,
+  iconScaleMetric:   iconScaleMetric,
+  iconGlucoseMetric: iconGlucoseMetric,
+};
+function resolveVitalIcon(name) { return VITAL_ICON_MAP[name] ?? iconHeartFill; }
+
+/* ─── Static assets only — text/prices/testimonials come from DB ──────────── */
+const DEVICE_STATIC = {
+  omron: {
+    productImage:     omronProduct,
+    heroImage:        omronHero,
+    heroLabel:        'OMRON BP MONITOR – HEM-7141',
+    trustBanner,
+    testimonialPhoto: userRohit,
+  },
+  meditive: {
+    productImage:     meditiveProduct,
+    heroImage:        meditiveHero,
+    heroLabel:        'MEDITIVE BODY COMPOSITION SCALE',
+    trustBanner,
+    testimonialPhoto: userAyush,
+  },
+  glucobuddy: {
+    productImage:     glucoProduct,
+    heroImage:        glucoHero,
+    heroLabel:        'RGB GLUCOBUDDY GLUCOMETER',
+    trustBanner,
+    testimonialPhoto: userNeha,
+  },
 };
 
-/* ─── Static bullets (shared across all tabs) ─────────────────────────────── */
-const BULLETS = [
-  'Simple setup. Smarter monitoring.',
-  'Native Total Care integration',
-  'No third-party health hub dependency',
-  'Clinically validated branded devices',
-  'Accurate, real-time health tracking',
-  'Simple setup. No ecosystem lock-in.',
-];
-
-/* ─── Device data ─────────────────────────────────────────────────────────── */
-const DEVICES = [
-  /* ── Tab 1: Omron BP Monitor ─────────────────────────────────────────── */
-  {
-    id: 'omron',
-    productId: 'bp',
-    tabLabel: 'Omron BP Monitor – HEM-7140-AP',
-    product: {
-      image:       omronProduct,
-      title:       'Omron BP Monitor – HEM-7140-AP',
-      description: 'A clinically validated digital BP monitor that tracks blood pressure and pulse with reliable, at-home accuracy.',
-      trustBanner,
-    },
-    hero: {
-      image: omronHero,
-      label: 'OMRON BP MONITOR – HEM-7141',
-    },
-    testimonial: {
-      photo: userRohit,
-      name:  'Rohit Sharma',
-      quote: 'I stopped guessing and began understanding my blood pressure trends. With insights from my monitor and the Total Care app, I can make sense of my readings.',
-    },
-    vitals: {
-      layout: 'grid',
-      latestReading: null,
-      stats: [
-        { icon: iconHeartFill,   label: 'Heart Rate',     value: '98',  unit: 'BPM',   chart: sparklineUp   },
-        { icon: iconGlucoseStat, label: 'Glucose',        value: '92',  unit: 'mg/dL', chart: sparklineDown },
-        { icon: iconPerson,      label: 'Blood pressure', value: '98',  unit: 'BPM',   chart: sparklineDown },
-        { icon: iconSleep,       label: 'Sleep',          value: '8',   unit: 'Hr',    value2: '43', unit2: 'Min', chart: sparklineDown },
-      ],
-    },
-    insight: {
-      icon:  iconBpMetric,
-      label: 'Blood Pressure',
-      type:  'paragraph',
-      text:  'Your BP is slightly elevated today. Consider resting and hydrating.',
-    },
-  },
-
-  /* ── Tab 2: Meditive Body Composition Scale ───────────────────────────── */
-  {
-    id: 'meditive',
-    productId: 'scale',
-    tabLabel: 'Meditive Body Composition Scale',
-    product: {
-      image:       meditiveProduct,
-      title:       'Meditive Body Composition Scale',
-      description: 'A smart body composition scale that tracks weight, body fat, muscle, and more to give a complete view of your health.',
-      trustBanner,
-    },
-    hero: {
-      image: meditiveHero,
-      label: 'MEDITIVE BODY COMPOSITION SCALE',
-    },
-    testimonial: {
-      photo: userAyush,
-      name:  'Ayush Mehta',
-      quote: 'Weight was merely a number in the past, but now I truly understand the changes happening within my body and how they affect my overall health and energy levels.',
-    },
-    vitals: {
-      layout: 'list',
-      latestReading: 'Today, 8:30 AM',
-      stats: [
-        { icon: iconScaleMetric, label: 'Body Weight', value: '72.4', unit: 'kg',  chart: sparklineUp   },
-        { icon: iconScaleMetric, label: 'Body Fat',    value: '21.8%', unit: '',   chart: sparklineDown },
-        { icon: iconScaleMetric, label: 'BMI',         value: '21.8%', unit: '',   chart: sparklineDown },
-      ],
-    },
-    insight: {
-      icon:      iconScaleMetric,
-      label:     'BMI',
-      type:      'metric',
-      highlight: '40%',
-      text:      'improvement. Stay consistent with workouts and hydration',
-    },
-  },
-
-  /* ── Tab 3: RGB GlucoBuddy Glucometer ────────────────────────────────── */
-  {
-    id: 'glucobuddy',
-    productId: 'glucose',
-    tabLabel: 'RGB GlucoBuddy Glucometer',
-    product: {
-      image:       glucoProduct,
-      title:       'RGB GlucoBuddy Glucometer',
-      description: 'A glucometer that tracks blood sugar levels and trends to help you manage diabetes with clarity.',
-      trustBanner,
-    },
-    hero: {
-      image: glucoHero,
-      label: 'RGB GLUCOBUDDY GLUCOMETER',
-    },
-    testimonial: {
-      photo: userNeha,
-      name:  'Neha Kulkarni',
-      quote: "I used to check my sugar levels but never really understood them fully. Now I can clearly see patterns — what affects my levels, what doesn't, and how to manage them better.",
-    },
-    vitals: {
-      layout: 'list',
-      latestReading: 'Today, 8:30 AM',
-      stats: [
-        { icon: iconGlucoseMetric, label: 'Glucose',         value: '142', unit: 'mg/dl', chart: sparklineUp   },
-        { icon: iconGlucoseMetric, label: 'Post-Meal Level', value: '168', unit: 'mg/dl', chart: sparklineDown },
-        { icon: iconGlucoseMetric, label: 'Daily Average',   value: '136', unit: 'mg/dl', chart: sparklineDown },
-      ],
-    },
-    insight: {
-      icon:      iconGlucoseMetric,
-      label:     'Track Glucose Now',
-      type:      'metric',
-      highlight: '2:30 PM',
-      text:      'Time to check your glucose level.',
-    },
-  },
+const FALLBACK_TABS = [
+  { id: 'omron',      tabLabel: 'Omron BP Monitor – HEM-7140-AP' },
+  { id: 'meditive',   tabLabel: 'Meditive Body Composition Scale' },
+  { id: 'glucobuddy', tabLabel: 'RGB GlucoBuddy Glucometer' },
 ];
 
 /* ─── Animation variants ──────────────────────────────────────────────────── */
@@ -178,13 +89,31 @@ const fadeVariants = {
   exit:    { opacity: 0, y: -8, transition: { duration: 0.2, ease: 'easeIn' } },
 };
 
-/* ─── VitalsCard — built with shared hero primitives ─────────────────────── */
-function VitalsCard({ vitals }) {
-  const isGrid = vitals.layout === 'grid';
+/* ─── VitalsCard — reads from DB tab shape ────────────────────────────────── */
+function VitalsCard({ tab }) {
+  const isGrid = tab?.vitalsLayout === 'grid';
+  const stats  = tab?.vitals ?? [];
+  const row1   = stats.slice(0, 2);
+  const row2   = stats.slice(2, 4);
+
+  function StatPanel({ stat }) {
+    return (
+      <GlassPanel className="flex flex-1 items-center justify-between p-[10px]">
+        <div className="flex flex-col gap-[8px]">
+          <CardTag icon={resolveVitalIcon(stat.iconName)} label={stat.label} />
+          <CardStat>
+            <StatNum>{stat.value}</StatNum>
+            {stat.unit   && <StatUnit>{stat.unit}</StatUnit>}
+            {stat.value2 && <><StatNum>{stat.value2}</StatNum><StatUnit>{stat.unit2}</StatUnit></>}
+          </CardStat>
+        </div>
+        <img src={sparklineUp} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
+      </GlassPanel>
+    );
+  }
 
   return (
     <GlassCard className="w-full shrink-0">
-      {/* heading */}
       <div className="px-1 w-full">
         <p
           className="font-inter font-medium text-[24px] leading-normal tracking-[0.389px]
@@ -198,61 +127,36 @@ function VitalsCard({ vitals }) {
 
       <CardDivider />
 
-      {vitals.latestReading && (
+      {tab?.latestReadingLabel && (
         <div className="flex gap-2 px-1 font-inter font-medium text-[8.53px]
                         tracking-[0.276px] leading-[14px]">
           <span className="text-[#4d4d4d]">Latest Reading</span>
-          <span className="text-[#999]">({vitals.latestReading})</span>
+          <span className="text-[#999]">({tab.latestReadingLabel})</span>
         </div>
       )}
 
-      {/* stats — grid or list */}
       {isGrid ? (
         <>
           <div className="flex gap-[8.533px] w-full">
-            {[vitals.stats[0], vitals.stats[1]].map((stat, i) => (
-              <GlassPanel key={i} className="flex flex-1 items-center justify-between p-[10px]">
-                <div className="flex flex-col gap-[8px]">
-                  <CardTag icon={stat.icon} label={stat.label} />
-                  <CardStat>
-                    <StatNum>{stat.value}</StatNum>
-                    {stat.unit && <StatUnit>{stat.unit}</StatUnit>}
-                    {stat.value2 && <><StatNum>{stat.value2}</StatNum><StatUnit>{stat.unit2}</StatUnit></>}
-                  </CardStat>
-                </div>
-                <img src={stat.chart} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-              </GlassPanel>
-            ))}
+            {row1.map(s => <StatPanel key={s.id} stat={s} />)}
           </div>
           <CardDivider />
           <div className="flex gap-[8.533px] w-full">
-            {[vitals.stats[2], vitals.stats[3]].map((stat, i) => (
-              <GlassPanel key={i} className="flex flex-1 items-center justify-between p-[10px]">
-                <div className="flex flex-col gap-[8px]">
-                  <CardTag icon={stat.icon} label={stat.label} />
-                  <CardStat>
-                    <StatNum>{stat.value}</StatNum>
-                    {stat.unit && <StatUnit>{stat.unit}</StatUnit>}
-                    {stat.value2 && <><StatNum>{stat.value2}</StatNum><StatUnit>{stat.unit2}</StatUnit></>}
-                  </CardStat>
-                </div>
-                <img src={stat.chart} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
-              </GlassPanel>
-            ))}
+            {row2.map(s => <StatPanel key={s.id} stat={s} />)}
           </div>
         </>
       ) : (
         <div className="flex flex-col gap-[8.533px] w-full">
-          {vitals.stats.map((stat, i) => (
-            <GlassPanel key={i} className="flex items-center justify-between p-[10px] w-full">
+          {stats.map(s => (
+            <GlassPanel key={s.id} className="flex items-center justify-between p-[10px] w-full">
               <div className="flex flex-col gap-[8px]">
-                <CardTag icon={stat.icon} label={stat.label} />
+                <CardTag icon={resolveVitalIcon(s.iconName)} label={s.label} />
                 <CardStat>
-                  <StatNum>{stat.value}</StatNum>
-                  {stat.unit && <StatUnit>{stat.unit}</StatUnit>}
+                  <StatNum>{s.value}</StatNum>
+                  {s.unit && <StatUnit>{s.unit}</StatUnit>}
                 </CardStat>
               </div>
-              <img src={stat.chart} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
+              <img src={sparklineDown} alt="" aria-hidden className="h-[5.159px] w-[30.711px] object-contain" />
             </GlassPanel>
           ))}
         </div>
@@ -268,35 +172,34 @@ function VitalsCard({ vitals }) {
   );
 }
 
-/* ─── InsightCard ─────────────────────────────────────────────────────────── */
+/* ─── InsightCard — reads from DB insight shape ───────────────────────────── */
 function InsightCard({ insight }) {
+  if (!insight) return null;
+  const icon = resolveVitalIcon(insight.iconName);
   return (
     <div className="relative bg-white rounded-[20px] flex flex-col gap-3 p-4 shrink-0
                     drop-shadow-[0px_2px_10px_rgba(0,65,114,0.08)]
                     shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.12)]">
-      {/* tag */}
       <div className="flex gap-[5px] items-center">
-        <img src={insight.icon} alt="" className="w-3.5 h-3.5 object-contain" />
+        <img src={icon} alt="" className="w-3.5 h-3.5 object-contain" />
         <span className="font-inter font-medium text-[13px] text-[#008eb1]
                          tracking-[0.4px] leading-6 whitespace-nowrap">
           {insight.label}
         </span>
       </div>
-
-      {/* content */}
-      {insight.type === 'paragraph' ? (
+      {insight.insightType === 'paragraph' ? (
         <p className="font-inter font-medium text-[11px] text-[#4d4d4d]
                       tracking-[0.3px] leading-[18px]">
-          {insight.text}
+          {insight.insightText}
         </p>
       ) : (
         <div className="flex flex-wrap gap-1 items-end font-inter font-medium">
           <span className="text-[20px] text-black tracking-[0.3888px] leading-none whitespace-nowrap">
-            {insight.highlight}
+            {insight.highlightValue}
           </span>
           <span className="flex-1 min-w-[60px] text-[11px] text-[#4d4d4d]
                            tracking-[0.3px] leading-[18px]">
-            {insight.text}
+            {insight.insightText}
           </span>
         </div>
       )}
@@ -366,19 +269,18 @@ function TestimonialCard({ testimonial }) {
 }
 
 /* ─── LeftProductCard ─────────────────────────────────────────────────────── */
-function LeftProductCard({ product, productId }) {
+function LeftProductCard({ product, productId, price, originalPrice }) {
   const navigate  = useNavigate();
   const { showToast } = useCart();
 
   const handleAddToCart = () => {
-    const prices = PRODUCT_PRICES[productId] || { price: 999, originalPrice: 1999 };
     showToast({
       image:         product.image,
       label:         'Device',
       name:          product.title,
       type:          'product',
-      price:         prices.price,
-      originalPrice: prices.originalPrice,
+      price:         price ?? 999,
+      originalPrice: originalPrice ?? 1999,
       description:   product.description,
     });
   };
@@ -479,26 +381,25 @@ function HeroPanel({ hero }) {
 }
 
 /* ─── RightSidebar ────────────────────────────────────────────────────────── */
-function RightSidebar({ device }) {
+function RightSidebar({ device, tab }) {
   return (
     <div className="flex flex-col gap-3 w-full lg:w-[400px] h-auto lg:h-full shrink-0">
       <TestimonialCard testimonial={device.testimonial} />
-      <VitalsCard      vitals={device.vitals} />
-      <InsightCard     insight={device.insight} />
+      <VitalsCard      tab={tab} />
+      <InsightCard     insight={tab?.insight} />
     </div>
   );
 }
 
 /* ─── TabBar ──────────────────────────────────────────────────────────────── */
-function TabBar({ activeIdx, onChange }) {
+function TabBar({ activeIdx, onChange, tabs }) {
   return (
-    /* Mobile: vertical stacked (Figma). Desktop: horizontal side-by-side */
     <div className="flex flex-col md:flex-row w-full gap-0 md:gap-0">
-      {DEVICES.map((d, i) => {
+      {tabs.map((tab, i) => {
         const isActive = i === activeIdx;
         return (
           <button
-            key={d.id}
+            key={tab.id}
             onClick={() => onChange(i)}
             className={`w-full md:flex-1 px-5 py-[14px] text-left md:text-center
                         text-[16px] tracking-[0.5184px] leading-7
@@ -509,7 +410,7 @@ function TabBar({ activeIdx, onChange }) {
                           : 'border-b border-[#e5e5e5] font-inter font-medium text-[#808080] hover:text-[#555]'
                         }`}
           >
-            {d.tabLabel}
+            {tab.tabLabel}
           </button>
         );
       })}
@@ -517,9 +418,40 @@ function TabBar({ activeIdx, onChange }) {
   );
 }
 
+
 /* ─── ProductDetailSection ────────────────────────────────────────────────── */
 export default function ProductDetailSection() {
   const [activeIdx, setActiveIdx] = useState(0);
+  const { tabs, loading }         = useProductDetailTabs();
+  const { bullets }               = useProductShowcaseBullets();
+
+  const displayTabs = loading || tabs.length === 0
+    ? FALLBACK_TABS.map(d => ({ ...d, vitalsLayout: 'grid', latestReadingLabel: null, vitals: [], insight: null, product: null }))
+    : tabs;
+
+  const activeTab    = displayTabs[activeIdx] ?? displayTabs[0];
+  const staticAssets = DEVICE_STATIC[activeTab?.id] ?? DEVICE_STATIC.omron;
+  const dbProduct    = activeTab?.product;
+  const dbTestimonial = dbProduct?.testimonials?.[0];
+
+  const getDbImg = (type) =>
+    (dbProduct?.images ?? []).find(img => img.imageType === type)?.imageUrl ?? null;
+
+  const product = {
+    image:       getDbImg('product_detail') ?? staticAssets.productImage,
+    trustBanner: getDbImg('trust_banner')   ?? staticAssets.trustBanner,
+    title:       dbProduct?.name        ?? activeTab?.tabLabel ?? '',
+    description: dbProduct?.description ?? '',
+  };
+  const hero = {
+    image: getDbImg('hero') ?? staticAssets.heroImage,
+    label: staticAssets.heroLabel,
+  };
+  const testimonial = {
+    photo: dbTestimonial?.photoUrl ?? staticAssets.testimonialPhoto,
+    name:  dbTestimonial?.personName ?? '',
+    quote: dbTestimonial?.quote      ?? '',
+  };
 
   return (
     <section className="bg-[#fdfffc] flex flex-col items-center
@@ -536,15 +468,15 @@ export default function ProductDetailSection() {
           </div>
           <ul className="font-inter font-light text-[16px] text-black
                          tracking-[0.5184px] leading-7 list-disc pl-6 shrink-0">
-            {BULLETS.map((b, i) => (
-              <li key={i}>{b}</li>
+            {bullets.map(b => (
+              <li key={b.id}>{b.bulletText}</li>
             ))}
           </ul>
         </div>
 
         {/* ── Tabs + content ── */}
         <div className="flex flex-col pt-6">
-          <TabBar activeIdx={activeIdx} onChange={setActiveIdx} />
+          <TabBar activeIdx={activeIdx} onChange={setActiveIdx} tabs={displayTabs} />
 
           {/* content panel */}
           <div className="border-t border-[#a2a2a2]
@@ -553,20 +485,22 @@ export default function ProductDetailSection() {
                           overflow-hidden">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={DEVICES[activeIdx].id}
+                key={activeTab?.id ?? activeIdx}
                 variants={fadeVariants}
                 initial="initial"
                 animate="animate"
                 exit="exit"
                 className="flex flex-col lg:flex-row gap-6 w-full h-auto xl:h-full"
               >
-                {/* Left: product card */}
-                <LeftProductCard product={DEVICES[activeIdx].product} productId={DEVICES[activeIdx].productId} />
-
-                {/* Center + right: hero + sidebar */}
+                <LeftProductCard
+                  product={product}
+                  productId={activeTab?.productId}
+                  price={dbProduct?.price}
+                  originalPrice={dbProduct?.originalPrice}
+                />
                 <div className="flex flex-col lg:flex-row gap-[19px] w-full lg:flex-1 min-w-0 h-auto xl:h-full">
-                  <HeroPanel    hero={DEVICES[activeIdx].hero} />
-                  <RightSidebar device={DEVICES[activeIdx]} />
+                  <HeroPanel    hero={hero} />
+                  <RightSidebar device={{ testimonial }} tab={activeTab} />
                 </div>
               </motion.div>
             </AnimatePresence>

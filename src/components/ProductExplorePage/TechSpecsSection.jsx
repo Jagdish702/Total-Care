@@ -3,140 +3,7 @@ import techSpecsScaleImg  from '../../assets/product-explore/tech-specs-scale.pn
 import techSpecsOmronImg  from '../../assets/product-explore/omron bp tech spec.png';
 import techSpecsGlucoImg  from '../../assets/product-explore/rgb glucobody tech spec.png';
 
-const TAB_IMAGES = [techSpecsScaleImg, techSpecsOmronImg, techSpecsGlucoImg];
-const TAB_ALTS  = [
-  'Meditive Body Composition Scale — technical diagram',
-  'Omron BP Monitor — technical diagram',
-  'Glucobuddy — technical diagram',
-];
-
-/* ─── Spec data ─────────────────────────────────────────────────────────────── */
-const MEDITIVE_SPECS = [
-  {
-    title: 'Overview',
-    rows: [
-      ['Model',        'Meditive BCM-202'],
-      ['Display',      'Hidden LED (high-contrast)'],
-      ['Connectivity', 'Bluetooth 4.0 / 5.0'],
-    ],
-  },
-  {
-    title: 'Dimensions & Weight',
-    rows: [
-      ['Dimensions', '280 x 280 x 24 mm'],
-      ['Weight',     '1.2 kg'],
-    ],
-  },
-  {
-    title: 'Power & Build',
-    rows: [
-      ['Power Source', '3 x 1.5V AAA Batteries'],
-      ['Material',     '6mm Tempered Safety Glass / ABS Plastic'],
-      ['Capacity',     '180 kg (400 lbs)'],
-      ['Graduation',   '0.05 kg'],
-    ],
-  },
-  {
-    title: 'Identification',
-    rows: [
-      ['Sensors',           '4 x High-Precision G-Sensors'],
-      ['App Compatibility', 'iOS 8.0+ / Android 4.3+'],
-      ['Certifications',    'CE, RoHS, FCC'],
-    ],
-  },
-  {
-    title: 'Warranty',
-    rows: [
-      ['Standard Warranty', '1 Year'],
-    ],
-  },
-];
-
-const OMRON_SPECS = [
-  {
-    title: 'Overview',
-    rows: [
-      ['Model',        'Omron HEM-7140T1-AP'],
-      ['Display',      'Digital LCD'],
-      ['Connectivity', 'Bluetooth 4.2'],
-    ],
-  },
-  {
-    title: 'Dimensions & Weight',
-    rows: [
-      ['Dimensions', '148 x 98 x 50 mm'],
-      ['Weight',     '230 g (without batteries)'],
-    ],
-  },
-  {
-    title: 'Power & Build',
-    rows: [
-      ['Power Source', '4 x 1.5V AA Batteries'],
-      ['Material',     'ABS Plastic'],
-      ['Cuff Size',    'Medium (22–32 cm)'],
-    ],
-  },
-  {
-    title: 'Identification',
-    rows: [
-      ['App Compatibility', 'iOS 10.0+ / Android 5.0+'],
-      ['Certifications',    'CE, FDA, MHRA'],
-    ],
-  },
-  {
-    title: 'Warranty',
-    rows: [
-      ['Standard Warranty', '2 Years'],
-    ],
-  },
-];
-
-const GLUCOBUDDY_SPECS = [
-  {
-    title: 'Overview',
-    rows: [
-      ['Model',        'GlucoBuddy CGM Sensor'],
-      ['Display',      'Via Smartphone App (NFC / Bluetooth)'],
-      ['Connectivity', 'NFC + Bluetooth 5.0'],
-    ],
-  },
-  {
-    title: 'Sensor & Accuracy',
-    rows: [
-      ['Measurement Range', '40–400 mg/dL'],
-      ['Wear Duration',     'Up to 14 Days'],
-      ['MARD Accuracy',     '< 9%'],
-      ['Warm-Up Time',      '60 Minutes after application'],
-    ],
-  },
-  {
-    title: 'Power & Build',
-    rows: [
-      ['Power Source', 'Built-in Battery (sensor)'],
-      ['Water Resistance', 'IP28 — up to 1m for 30 min'],
-      ['Sensor Size',  '35 mm × 35 mm × 5 mm'],
-    ],
-  },
-  {
-    title: 'Identification',
-    rows: [
-      ['App Compatibility', 'iOS 14.0+ / Android 8.0+'],
-      ['Certifications',    'CE, ISO 15197'],
-    ],
-  },
-  {
-    title: 'Warranty',
-    rows: [
-      ['Standard Warranty', '6 Months'],
-    ],
-  },
-];
-
-const ALL_SPECS = [MEDITIVE_SPECS, OMRON_SPECS, GLUCOBUDDY_SPECS];
-
-const TABS = ['Meditive Body Composition Scale', 'Omron BP Monitor', 'GlucoBuddy CGM'];
-
-/* ─── Dynamic DB helpers ─────────────────────────────────────────────────────── */
+/* ─── DB helpers ─────────────────────────────────────────────────────────────── */
 
 const SPEC_IMAGES = {
   'scale':   techSpecsScaleImg,
@@ -164,13 +31,14 @@ function groupSpecs(techSpecs) {
 }
 
 function buildSpecTabsFromProduct(product) {
-  if (!product) return { tabs: TABS, images: TAB_IMAGES, allSpecs: ALL_SPECS };
+  if (!product) return { tabs: [], images: [], allSpecs: [] };
 
   // Individual product with DB specs
   if ((product.techSpecs ?? []).length > 0) {
+    const dbImg = (product.images ?? []).find(img => img.imageType === 'tech_specs')?.imageUrl ?? null;
     return {
       tabs:     [SPEC_TAB_LABELS[product.id] || product.name],
-      images:   [SPEC_IMAGES[product.id] || techSpecsScaleImg],
+      images:   [dbImg || SPEC_IMAGES[product.id] || techSpecsScaleImg],
       allSpecs: [groupSpecs(product.techSpecs)],
     };
   }
@@ -181,14 +49,16 @@ function buildSpecTabsFromProduct(product) {
     if (components.length > 0) {
       return {
         tabs:     components.map(bi => SPEC_TAB_LABELS[bi.component.id] || bi.component.name),
-        images:   components.map(bi => SPEC_IMAGES[bi.component.id] || techSpecsScaleImg),
+        images:   components.map(bi => {
+          const dbImg = (bi.component.images ?? []).find(img => img.imageType === 'tech_specs')?.imageUrl ?? null;
+          return dbImg || SPEC_IMAGES[bi.component.id] || techSpecsScaleImg;
+        }),
         allSpecs: components.map(bi => groupSpecs(bi.component.techSpecs)),
       };
     }
   }
 
-  // Hardcoded fallback
-  return { tabs: TABS, images: TAB_IMAGES, allSpecs: ALL_SPECS };
+  return { tabs: [], images: [], allSpecs: [] };
 }
 
 /* ─── SpecGroup ──────────────────────────────────────────────────────────────── */

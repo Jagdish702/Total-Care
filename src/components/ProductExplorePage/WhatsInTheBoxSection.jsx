@@ -9,7 +9,8 @@ const BOX_IMAGES = {
 };
 
 export default function WhatsInTheBoxSection({ product }) {
-  const boxImage = BOX_IMAGES[product?.id];
+  const dbImage  = (product?.images ?? []).find(img => img.imageType === 'whats_in_box')?.imageUrl ?? null;
+  const boxImage = dbImage ?? BOX_IMAGES[product?.id];
   if (!boxImage) return null;
 
   return (

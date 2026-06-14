@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import NavLink from './NavLink';
 import { OfferIcon, BellIcon, CartIcon, ProfileIcon, GridMenuIcon } from './icons';
 import { useCart } from '../../context/CartContext';
+import { useNav } from '../../hooks/useNav';
 
 import cureBayLogo from '../../assets/images/curebay-logo.png';
-
-// ---------------------------------------------------------------------------
-// Navigation data
-// ---------------------------------------------------------------------------
-const NAV_ITEMS = [
-  { label: 'Home',         href: '/',             active: false },
-  { label: 'Total Care',   href: '/total-care',   active: true  },
-  { label: 'Our Services', href: '/our-services', active: false },
-  { label: 'Our Team',     href: '/our-team',     active: false },
-  { label: 'About Us',     href: '/about-us',     active: false },
-  { label: 'Join Us',      href: '/join-us',      active: false },
-];
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -71,6 +61,16 @@ function IconButton({ label, badge, dropShadow = false, onClick, children }) {
 export default function Header({ onProfileClick }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cartCount, openCart } = useCart();
+  const { items: navItems } = useNav();
+  const { pathname } = useLocation();
+
+  const navLinks = navItems.map(item => ({
+    label: item.label,
+    href:  item.url ?? '#',
+    active: item.url === '/'
+      ? pathname === '/'
+      : pathname === item.url || pathname.startsWith(item.url + '/'),
+  }));
 
   return (
     <header className="bg-white w-full sticky top-0 z-50">
@@ -94,7 +94,7 @@ export default function Header({ onProfileClick }) {
 
         {/* Desktop Nav */}
         <nav aria-label="Main navigation" className="hidden lg:flex items-center gap-6">
-          {NAV_ITEMS.map((item) => (
+          {navLinks.map((item) => (
             <NavLink key={item.label} {...item} />
           ))}
         </nav>
@@ -185,7 +185,7 @@ export default function Header({ onProfileClick }) {
 
         {/* ── Nav links ── */}
         <div className="flex flex-col gap-1 px-3 py-3 flex-1 overflow-y-auto">
-          {NAV_ITEMS.map((item) => (
+          {navLinks.map((item) => (
             <NavLink
               key={item.label}
               {...item}

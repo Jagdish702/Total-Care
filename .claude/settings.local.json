@@ -97,7 +97,31 @@
       "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-bp.png\" \"https://www.figma.com/api/mcp/asset/28e47f23-08ee-4cf5-b659-88f499edf65b\")",
       "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-scale.png\" \"https://www.figma.com/api/mcp/asset/9d64dfec-d95e-4aa5-b274-5abc5a5e0c67\")",
       "Bash(curl -s -o \"C:/Users/HP/Desktop/Final Total Care Store Front/src/assets/product-explore/whats-in-box-glucose.png\" \"https://www.figma.com/api/mcp/asset/bd26652c-44be-48c2-8fbd-5b2012fbfae9\")",
-      "Bash(findstr /C:\"\\\\\"dev\\\\\"\")"
+      "Bash(findstr /C:\"\\\\\"dev\\\\\"\")",
+      "Bash(curl -s http://localhost:4000/api/nav)",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"http://localhost:4000/api/nav\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:57506/)",
+      "Bash(Start-Sleep -Seconds 4)",
+      "PowerShell(Start-Sleep -Seconds 5; try { $r = Invoke-WebRequest http://localhost:57506/ -TimeoutSec 5 -UseBasicParsing; $r.StatusCode } catch { \"failed: $_\" })",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('scripts',{}\\)\\)\")",
+      "PowerShell(try { $r = Invoke-WebRequest \"http://localhost:5173/products/bp\" -TimeoutSec 5 -UseBasicParsing; \"ok: $\\($r.StatusCode\\) len: $\\($r.Content.Length\\)\" } catch { \"failed: $_\" })",
+      "Bash(xargs grep -l \"72\\\\.4\\\\|142\\\\|168\\\\|136\\\\|21\\\\.8\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "PowerShell($r = Invoke-RestMethod 'http://localhost:4000/api/care-services' -ErrorAction SilentlyContinue; $r.data[0] | ConvertTo-Json -Depth 5)",
+      "Bash(curl -s \"http://localhost:4000/api/site-config?group=hero\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(type\\(d['data']\\).__name__, list\\(d['data'].items\\(\\)\\)[:3]\\)\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\src\" -Recurse -Directory)",
+      "PowerShell(cd \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\"; $env:CI = \"1\"; npx prisma migrate dev --name add_image_urls --skip-seed 2>&1)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\\\\src\\\\routes\" -Filter \"*.js\")",
+      "Bash(curl -s \"http://localhost:4000/api/products?type=bundle\")",
+      "Bash(curl -s \"http://localhost:4000/api/products?type=individual\")",
+      "Bash(node prisma/seed-image-urls.js)",
+      "Bash(node prisma/seed-section-images.js)",
+      "Bash(Get-ChildItem -Path \"src/components\", \"src/services\", \"src/hooks\" -Recurse -File)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\" -Recurse -Filter \"*hero*\" -ErrorAction SilentlyContinue)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\\\\src\\\\controllers\" -Filter \"*demo*\" -ErrorAction SilentlyContinue)"
     ]
   }
 }

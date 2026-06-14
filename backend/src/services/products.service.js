@@ -49,6 +49,7 @@ async function findById(id) {
       howItWorksSteps: { orderBy: { displayOrder: 'asc' } },
       tips:            { orderBy: { displayOrder: 'asc' } },
       techSpecs:       { orderBy: { displayOrder: 'asc' } },
+      lifestyleCards:  { where: { isActive: true }, orderBy: { displayOrder: 'asc' } },
       bundleItems: {
         orderBy: { displayOrder: 'asc' },
         include: {

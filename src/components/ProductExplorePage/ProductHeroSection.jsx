@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import cureBayLogo from '../../assets/images/curebay-logo.png';
 import { useCart } from '../../context/CartContext';
+import { usePromoText } from '../../hooks/usePromoText';
 
 /* ─── Design tokens ─────────────────────────────────────────────────────────── */
 const PURPLE_GRADIENT = 'linear-gradient(122.44deg, #B189FF 0%, #2E008B 96.072%)';
@@ -255,6 +256,7 @@ function ProductImage({ image, name, discount }) {
 function ProductInfo({ product }) {
   const countdown = useCountdown();
   const { showToast } = useCart();
+  const promoText = usePromoText();
   const inr = (n) => `₹${n.toLocaleString('en-IN')}`;
 
   const handleAddToCart = () => {
@@ -351,7 +353,7 @@ function ProductInfo({ product }) {
               backgroundClip:       'text',
             }}
           >
-            + 3 months of TotalCare subscription FREE
+            {'+ ' + promoText}
           </p>
         </div>
 

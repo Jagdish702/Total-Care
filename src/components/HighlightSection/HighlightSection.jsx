@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDemoVitals } from '../../hooks/useDemoVitals';
+import { useHighlights } from '../../hooks/useHighlights';
 import { CardDivider } from '../shared/CardPrimitives';
 
 // ── Section background ─────────────────────────────────────────────────────
@@ -16,6 +18,9 @@ import foodPoha from '../../assets/highlights/food-poha.jpg';
 // ── Overlay sparklines ─────────────────────────────────────────────────────
 import chartWave1 from '../../assets/hero/icons/chart-heart.svg';
 import chartWave2 from '../../assets/hero/icons/chart-generic.svg';
+
+const H_ICON_MAP  = { icoHeart, icoGlucose, icoPerson, icoSleep };
+const H_CHART_MAP = { heart: chartWave1, line: chartWave2 };
 
 // ── New icons ──────────────────────────────────────────────────────────────
 import icoRun     from '../../assets/highlights/ico-run.png';
@@ -190,47 +195,41 @@ function RecordsOverlay() {
 }
 
 function VitalsOverlay() {
+  const { vitals } = useDemoVitals();
+  const row1 = vitals.slice(0, 2);
+  const row2 = vitals.slice(2, 4);
+
+  function VPanel({ v }) {
+    const icon  = H_ICON_MAP[v.iconName]  ?? icoHeart;
+    const chart = H_CHART_MAP[v.chartType] ?? chartWave2;
+    return (
+      <HPanel className="flex flex-1 items-center justify-between min-w-0 p-[11.206px]">
+        <div className="relative flex flex-col gap-[11.206px] items-start">
+          <HTag icon={icon} label={v.label} />
+          {v.value2 ? (
+            <div className="flex items-end gap-[3.378px] font-inter font-medium whitespace-nowrap">
+              <span className="text-[16.81px] leading-normal tracking-[0.272px] text-black">{v.value}</span>
+              <span className="text-[8.4px] leading-[14.007px] tracking-[0.272px] text-[#4d4d4d]">{v.unit}</span>
+              <span className="text-[16.81px] leading-normal tracking-[0.272px] text-black">{v.value2}</span>
+              <span className="text-[8.4px] leading-[14.007px] tracking-[0.272px] text-[#4d4d4d]">{v.unit2}</span>
+            </div>
+          ) : (
+            <HStat num={v.value} unit={v.unit} />
+          )}
+        </div>
+        <img src={chart} alt="" aria-hidden className="h-[5.081px] w-[30.247px] object-contain flex-shrink-0 relative" />
+      </HPanel>
+    );
+  }
+
   return (
     <HOverlay>
-      {/* Row 1: Heart Rate + Glucose */}
       <div className="relative flex gap-[10.045px] items-start w-full">
-        <HPanel className="flex flex-1 items-center justify-between min-w-0 p-[11.206px]">
-          <div className="relative flex flex-col gap-[11.206px] items-start">
-            <HTag icon={icoHeart} label="Heart Rate" />
-            <HStat num="98" unit="BPM" />
-          </div>
-          <img src={chartWave1} alt="" aria-hidden className="h-[5.081px] w-[30.247px] object-contain flex-shrink-0 relative" />
-        </HPanel>
-        <HPanel className="flex flex-1 items-center justify-between min-w-0 p-[11.206px]">
-          <div className="relative flex flex-col gap-[11.206px] items-start">
-            <HTag icon={icoGlucose} label="Glucose" />
-            <HStat num="92" unit="mg/dL" />
-          </div>
-          <img src={chartWave2} alt="" aria-hidden className="h-[5.081px] w-[30.247px] object-contain flex-shrink-0 relative" />
-        </HPanel>
+        {row1.map(v => <VPanel key={v.id} v={v} />)}
       </div>
       <CardDivider />
-      {/* Row 2: Blood pressure + Sleep */}
       <div className="relative flex gap-[10.045px] items-start w-full">
-        <HPanel className="flex flex-1 items-center justify-between min-w-0 p-[11.206px]">
-          <div className="relative flex flex-col gap-[11.206px] items-start">
-            <HTag icon={icoPerson} label="Blood pressure" />
-            <HStat num="98" unit="BPM" />
-          </div>
-          <img src={chartWave2} alt="" aria-hidden className="h-[5.081px] w-[30.247px] object-contain flex-shrink-0 relative" />
-        </HPanel>
-        <HPanel className="flex flex-1 items-center justify-between min-w-0 p-[11.206px]">
-          <div className="relative flex flex-col gap-[11.206px] items-start">
-            <HTag icon={icoSleep} label="Sleep" />
-            <div className="flex items-end gap-[3.378px] font-inter font-medium whitespace-nowrap">
-              <span className="text-[16.81px] leading-normal tracking-[0.272px] text-black">8</span>
-              <span className="text-[8.4px] leading-[14.007px] tracking-[0.272px] text-[#4d4d4d]">Hr</span>
-              <span className="text-[16.81px] leading-normal tracking-[0.272px] text-black">43</span>
-              <span className="text-[8.4px] leading-[14.007px] tracking-[0.272px] text-[#4d4d4d]">Min</span>
-            </div>
-          </div>
-          <img src={chartWave2} alt="" aria-hidden className="h-[5.081px] w-[30.247px] object-contain flex-shrink-0 relative" />
-        </HPanel>
+        {row2.map(v => <VPanel key={v.id} v={v} />)}
       </div>
       <CardDivider />
       <p className="relative font-inter font-medium text-[8.4px] leading-[14.007px] tracking-[0.272px] text-[#4d4d4d] text-center w-full">
@@ -408,7 +407,7 @@ const MOBILE_CARD_DATA = [
   { src: card6, alt: 'Medicines and lab tests', label: 'Medicines & Lab Tests',           padX: 24,     padY: 24,     Overlay: LabOverlay       },
 ];
 
-function MobileHighlightSection() {
+function MobileHighlightSection({ dbCards = [] }) {
   const gridRef = useRef(null);
 
   // Initial scale estimate: (vw - 2×px-6 - gap-x-3) / 2 / CARD_INNER_W
@@ -459,7 +458,9 @@ function MobileHighlightSection() {
 
       {/* ── 2-column card grid ── */}
       <div ref={gridRef} className="grid grid-cols-2 gap-x-3 gap-y-6 w-full">
-        {MOBILE_CARD_DATA.map(({ src, alt, label, padX, padY, Overlay }, idx) => (
+        {MOBILE_CARD_DATA.map(({ src: staticSrc, alt, label, padX, padY, Overlay }, idx) => {
+          const src = dbCards[idx]?.imageUrl ?? staticSrc;
+          return (
           <div key={idx} className="flex flex-col items-center gap-[11px]">
 
             {/* ── Scaled card frame ──
@@ -507,7 +508,8 @@ function MobileHighlightSection() {
               {label}
             </p>
           </div>
-        ))}
+        );
+        })}
       </div>
     </section>
   );
@@ -515,7 +517,11 @@ function MobileHighlightSection() {
 
 // ── Main section ───────────────────────────────────────────────────────────
 
+// Static fallback images — used when DB imageUrl is null
+const STATIC_CARD_IMGS = [card1, card2, card3, card4, card5, card6];
+
 export default function HighlightSection() {
+  const { cards: dbCards } = useHighlights();
   const [isMobile, setMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
@@ -526,8 +532,11 @@ export default function HighlightSection() {
     return () => window.removeEventListener('resize', update);
   }, []);
 
+  const getImg = (index) =>
+    dbCards[index]?.imageUrl ?? STATIC_CARD_IMGS[index];
+
   /* ── Mobile ── */
-  if (isMobile) return <MobileHighlightSection />;
+  if (isMobile) return <MobileHighlightSection dbCards={dbCards} />;
 
   /* ── Desktop ── */
   return (
@@ -550,42 +559,42 @@ export default function HighlightSection() {
       <div className="relative z-10 grid grid-cols-3 gap-x-[48px] gap-y-[48px] justify-items-center">
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card1} alt="Doctor consultation">
+          <PhotoCard src={getImg(0)} alt="Doctor consultation">
             <RecordsOverlay />
           </PhotoCard>
           <CardLabel>Doctor Consultation</CardLabel>
         </div>
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card2} alt="AI health companion">
+          <PhotoCard src={getImg(1)} alt="AI health companion">
             <VitalsOverlay />
           </PhotoCard>
           <CardLabel>AI Health Companion</CardLabel>
         </div>
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card3} alt="Emergency services">
+          <PhotoCard src={getImg(2)} alt="Emergency services">
             <EmergencyOverlay />
           </PhotoCard>
           <CardLabel>{'Concierge &\nEmergency Services'}</CardLabel>
         </div>
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card4} alt="Smart diet plan" innerPadding="px-[17.791px] py-[35.582px]">
+          <PhotoCard src={getImg(3)} alt="Smart diet plan" innerPadding="px-[17.791px] py-[35.582px]">
             <NutritionOverlay />
           </PhotoCard>
           <CardLabel>Smart Diet Plan</CardLabel>
         </div>
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card5} alt="Exercise plans and tracking" innerPadding="p-[24px]">
+          <PhotoCard src={getImg(4)} alt="Exercise plans and tracking" innerPadding="p-[24px]">
             <ExerciseOverlay />
           </PhotoCard>
           <CardLabel>Exercise Plans &amp; Tracking</CardLabel>
         </div>
 
         <div className="flex flex-col gap-[24px] items-center">
-          <PhotoCard src={card6} alt="Medicines and lab tests" innerPadding="p-[24px]">
+          <PhotoCard src={getImg(5)} alt="Medicines and lab tests" innerPadding="p-[24px]">
             <LabOverlay />
           </PhotoCard>
           <CardLabel>Medicines &amp; Lab Tests</CardLabel>

@@ -1,4 +1,5 @@
 import { BUNDLE_COMPONENT_IMAGES, SUBSCRIPTION_IMAGE } from '../../assets/productImages';
+import { usePromoText } from '../../hooks/usePromoText';
 
 const SUBSCRIPTION_ITEM = {
   id:          'subscription',
@@ -57,6 +58,7 @@ function BundleCard({ item, isLast }) {
 }
 
 export default function BundleSection({ product }) {
+  const promoText = usePromoText();
   if (!product) return null;
 
   const isBundle = product.productType === 'bundle';
@@ -74,7 +76,8 @@ export default function BundleSection({ product }) {
       }))
     : [{ id: product.id, name: product.name, description: product.description, price: product.price, originalPrice: product.originalPrice, images: product.images ?? [] }];
 
-  const allItems = [...componentItems, SUBSCRIPTION_ITEM];
+  const subscriptionItem = { ...SUBSCRIPTION_ITEM, description: promoText + ' with device bundle purchase' };
+  const allItems = [...componentItems, subscriptionItem];
 
   // Totals
   const marketTotal     = componentItems.reduce((s, i) => s + i.originalPrice, 0);

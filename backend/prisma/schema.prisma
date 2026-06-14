@@ -41,6 +41,7 @@ model Product {
   tips                   ProductTip[]
   techSpecs              ProductTechSpec[]
   highlights             ProductHighlight[]
+  lifestyleCards         ProductLifestyleCard[]
 
   @@index([productType])
   @@index([isActive])
@@ -256,7 +257,10 @@ model CareService {
   label              String
   headline           String
   accentText         String? @map("accent_text")
+  description        String?
   iconName           String? @map("icon_name")
+  imageUrl           String? @map("image_url")
+  expandedImageUrl   String? @map("expanded_image_url")
   expandedPanelTop   Int?    @map("expanded_panel_top")
   expandedBulletsTop Int?    @map("expanded_bullets_top")
   displayOrder       Int     @default(0) @map("display_order")
@@ -387,6 +391,7 @@ model HighlightCard {
   label        String
   serviceId    String? @map("service_id")
   overlayType  String? @map("overlay_type")
+  imageUrl     String? @map("image_url")
   displayOrder Int     @default(0) @map("display_order")
   isActive     Boolean @default(true) @map("is_active")
 
@@ -400,6 +405,7 @@ model Health360Frame {
   id           Int     @id @default(autoincrement())
   titleLines   String  @map("title_lines") // JSON string array
   bodyText     String  @map("body_text")
+  imageUrl     String? @map("image_url")
   displayOrder Int     @default(0) @map("display_order")
   isActive     Boolean @default(true) @map("is_active")
 
@@ -711,6 +717,7 @@ model ProductHowItWorksStep {
   stepNumber   Int    @map("step_number")
   title        String
   description  String
+  imageUrl     String? @map("image_url")
   displayOrder Int    @default(0) @map("display_order")
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -755,4 +762,97 @@ model ProductHighlight {
 
   @@index([productId, displayOrder])
   @@map("product_highlights")
+}
+
+model ProductLifestyleCard {
+  id           Int     @id @default(autoincrement())
+  productId    String  @map("product_id")
+  imageKey     String  @map("image_key")
+  imageUrl     String? @map("image_url")
+  captionJson  String  @map("caption_json")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([productId, displayOrder])
+  @@map("product_lifestyle_cards")
+}
+
+model DemoVital {
+  id           Int     @id @default(autoincrement())
+  iconName     String  @map("icon_name")
+  label        String
+  value        String
+  unit         String?
+  value2       String?
+  unit2        String?
+  chartType    String  @default("line") @map("chart_type")
+  displayOrder Int     @default(0) @map("display_order")
+  isActive     Boolean @default(true) @map("is_active")
+
+  @@index([isActive, displayOrder])
+  @@map("demo_vitals")
+}
+
+// ─────────────────────────────────────────────
+// HERO SECTION CLUSTER
+// ─────────────────────────────────────────────
+
+model HeroSectionConfig {
+  id Int @id @default(autoincrement())
+
+  // Main text
+  heading      String @default("Total Care")
+  subheading   String @default("Health Tracking meets Real world Healthcare")
+  ctaPrimary   String @default("View Plans")   @map("cta_primary")
+  ctaSecondary String @default("How it Works") @map("cta_secondary")
+
+  // Records card
+  prescriptionsCount Int    @default(15)                                                    @map("prescriptions_count")
+  labTestsCount      Int    @default(9)                                                     @map("lab_tests_count")
+  allergiesCount     Int    @default(4)                                                     @map("allergies_count")
+  allergyList        String @default("Penicillin,Plant's oil (urushiol),Cephalosporins,Aspirin") @map("allergy_list")
+
+  // Nutrition card
+  nutritionMealType          String  @default("Breakfast")                                  @map("nutrition_meal_type")
+  nutritionFoodName          String  @default("Poha")                                       @map("nutrition_food_name")
+  nutritionCalories          Int     @default(320)                                          @map("nutrition_calories")
+  nutritionCalorieUnit       String  @default("KCAL")                                       @map("nutrition_calorie_unit")
+  nutritionRecommendation    String  @default("Low Oil Recommended")                        @map("nutrition_recommendation")
+  nutritionRecommendationTip String  @default("Keep peanuts light. Add veggies for fiber.") @map("nutrition_recommendation_tip")
+  nutritionFoodImageUrl      String? @map("nutrition_food_image_url")
+
+  // Emergency card
+  emergencyAmbulanceTime   String @default("30")      @map("emergency_ambulance_time")
+  emergencyConciergeTime   String @default("30")      @map("emergency_concierge_time")
+  emergencyContactName     String @default("Aaditya") @map("emergency_contact_name")
+  emergencyContactRelation String @default("Son")     @map("emergency_contact_relation")
+
+  // Health Sync card
+  healthSyncTitle           String  @default("Auto Health Sync")                                                               @map("health_sync_title")
+  healthSyncDescription     String  @default("Connect Apple / Google Health connect for real-time tracking, no manual input.") @map("health_sync_description")
+  healthSyncProfileImageUrl String? @map("health_sync_profile_image_url")
+
+  // Health Devices card
+  healthDevicesTitle       String  @default("Health Devices")                   @map("health_devices_title")
+  healthDevicesDescription String  @default("Save more, same care at low cost") @map("health_devices_description")
+  healthDevicesImageUrl    String? @map("health_devices_image_url")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  @@map("hero_section_config")
+}
+
+// ─────────────────────────────────────────────
+// WORKS WITH TOTAL CARE CLUSTER
+// ─────────────────────────────────────────────
+
+model WorksWithCardImage {
+  id        Int     @id @default(autoincrement())
+  productId String  @unique @map("product_id") // 'bp' | 'scale' | 'glucose'
+  imageUrl  String  @map("image_url")
+  altText   String? @map("alt_text")
+
+  @@map("works_with_card_images")
 }

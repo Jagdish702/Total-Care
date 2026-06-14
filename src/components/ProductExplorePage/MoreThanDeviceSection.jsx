@@ -1,76 +1,5 @@
 import moreThanDeviceImg from '../../assets/product-explore/more-than-device.png';
 
-/* ─── Product-specific config ────────────────────────────────────────────────
-   image  → the full-width ecosystem diagram for this product
-   features → bullet list (right column, Figma w-[457px])
-   Add a dedicated image per product once assets are available.
-──────────────────────────────────────────────────────────────────────────── */
-const PRODUCT_CONFIG = {
-  'complete-essentials': {
-    image: moreThanDeviceImg,
-    features: [
-      'Blood sugar, BP, pulse & body composition — all in one',
-      'Syncs with Total Care app',
-      'AI insights + alerts',
-      'Doctor support when needed',
-    ],
-  },
-  'bp-essentials': {
-    image: moreThanDeviceImg,
-    features: [
-      'Blood pressure & pulse monitoring, daily',
-      'Body composition tracking — BMI, fat, muscle',
-      'Syncs with Total Care app',
-      'AI insights + doctor support',
-    ],
-  },
-  'diabetes-essentials': {
-    image: moreThanDeviceImg,
-    features: [
-      'Fast blood glucose results in 5 seconds',
-      'Body composition — weight, BMI & body fat',
-      'Syncs with Total Care app',
-      'AI insights + alerts',
-    ],
-  },
-  'scale': {
-    image: moreThanDeviceImg,
-    features: [
-      'Tracks fat, muscle, BMI, metabolism',
-      'Syncs with Total Care app',
-      'AI insights + alerts',
-      'Doctor support when needed',
-    ],
-  },
-  'glucose': {
-    image: moreThanDeviceImg,
-    features: [
-      'Fast results in 5 seconds, 900-test memory',
-      'Before & after meal sugar tracking',
-      'Syncs with Total Care app',
-      'AI insights + alerts',
-    ],
-  },
-  'bp': {
-    image: moreThanDeviceImg,
-    features: [
-      'Clinically validated BP & pulse monitoring',
-      'Irregular heartbeat detection',
-      'Syncs with Total Care app',
-      'AI insights + doctor support',
-    ],
-  },
-};
-
-const DEFAULT_CONFIG = {
-  image: moreThanDeviceImg,
-  features: [
-    'Tracks fat, muscle, BMI, metabolism',
-    'Syncs with Total Care app',
-    'AI insights + alerts',
-    'Doctor support when needed',
-  ],
-};
 
 /* ─── CartIcon ────────────────────────────────────────────────────────────── */
 function CartIcon() {
@@ -87,10 +16,9 @@ function CartIcon() {
 
 /* ─── MoreThanDeviceSection ───────────────────────────────────────────────── */
 export default function MoreThanDeviceSection({ product }) {
-  const dbHighlights = product?.highlights ?? [];
-  const config = dbHighlights.length > 0
-    ? { ...((product && PRODUCT_CONFIG[product.id]) || DEFAULT_CONFIG), features: dbHighlights.map(h => h.highlightText) }
-    : (product && PRODUCT_CONFIG[product.id]) || DEFAULT_CONFIG;
+  const features  = (product?.highlights ?? []).map(h => h.highlightText);
+  const dbImage   = (product?.images ?? []).find(img => img.imageType === 'more_than_device')?.imageUrl;
+  const heroImage = (dbImage && dbImage !== '') ? dbImage : moreThanDeviceImg;
 
   return (
     <section className="w-full bg-white">
@@ -131,7 +59,7 @@ export default function MoreThanDeviceSection({ product }) {
                        tracking-[0.5184px] text-black
                        lg:w-[457px] shrink-0 pl-6 space-y-0"
           >
-            {config.features.map((f, i) => (
+            {features.map((f, i) => (
               <li key={i}>{f}</li>
             ))}
           </ul>
@@ -143,7 +71,7 @@ export default function MoreThanDeviceSection({ product }) {
           style={{ aspectRatio: '4096 / 1875' }}
         >
           <img
-            src={config.image}
+            src={heroImage}
             alt="Complete health ecosystem"
             className="absolute inset-0 w-full h-full object-cover"
           />

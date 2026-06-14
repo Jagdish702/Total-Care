@@ -7,72 +7,19 @@ import conciergeIcon        from '../../assets/subscription/icon-concierge.svg';
 import medicineIcon         from '../../assets/subscription/icon-medicine.svg';
 import subscriptionToastImg from '../../assets/product-explore/cart-toast-subscription.png';
 import { useCart }          from '../../context/CartContext';
+import { useSubscriptionPlans } from '../../hooks/useSubscriptionPlans';
 
-/* ─── Data ──────────────────────────────────────────────────────────────── */
+/* ─── Icon map ───────────────────────────────────────────────────────────── */
+const ICON_MAP = { ambulanceIcon, specialistIcon, conciergeIcon, medicineIcon };
 
-const FEATURES = [
-  { icon: ambulanceIcon,  label: 'Ambulance within 30 minutes' },
-  { icon: specialistIcon, label: 'Specialist consultation within 48 hours' },
-  { icon: conciergeIcon,  label: 'Medical Concierge within 30 minutes' },
-  { icon: specialistIcon, label: 'Family doctor call back within 6 hours' },
-  { icon: medicineIcon,   label: 'Medicine delivery within 3 hours' },
-];
+function resolveIcon(iconName) {
+  return ICON_MAP[iconName] ?? specialistIcon;
+}
 
-const PLANS = [
-  {
-    title:     'Quarterly Plan',
-    original:  '199',
-    price:     '99',
-    unitLines: ['INR /', 'month'],
-    descLines: ['First 3 months billed at ₹297, then ₹99/month.', 'Save upto ₹300 on your dedicated care'],
-    cta:       'Get Started at ₹297',
-  },
-  {
-    title:     'Yearly plan',
-    original:  '1,999',
-    price:     '999',
-    unitLines: ['INR /', 'year'],
-    descLines: ['Billed yearly.', 'Save upto ₹1,000 on your dedicated care.'],
-    cta:       'Get Started at ₹999',
-  },
-];
-
-const MODAL_DATA = [
-  {
-    planTitle:  'Quarterly Plan',
-    titleColor: '#d29300',
-    subtitle:   'Flexible monthly continuation',
-    priceBreakdown: [
-      { label: 'First 3 months', original: '₹597', discounted: '₹297/month' },
-      { label: 'After 3 months', original: '₹199', discounted: '₹99/month'  },
-    ],
-    youSaved: [
-      { label: '₹100/month × 3 months', value: '₹300 saved'       },
-      { label: 'After 3 months',         value: '₹100/month Saved' },
-    ],
-    billingInfo: [
-      'Billed ₹297 today',
-      'Auto-renews monthly at ₹99',
-      'Cancel anytime before next billing',
-    ],
-  },
-  {
-    planTitle:  'Yearly Plan',
-    titleColor: '#00b2dd',
-    subtitle:   'Best value for long-term care',
-    priceBreakdown: [
-      { label: '12 months access', original: '₹1,999', discounted: '₹999/year' },
-    ],
-    youSaved: [
-      { label: '₹1000/year', value: '₹1,000 saved' },
-    ],
-    billingInfo: [
-      'Billed ₹999 today',
-      'Renews yearly',
-      'Cancel anytime before renewal',
-    ],
-  },
-];
+function formatPrice(n) {
+  if (n == null) return '';
+  return n.toLocaleString('en-IN');
+}
 
 /* ─── Countdown ─────────────────────────────────────────────────────────── */
 const INITIAL_SECS = 47 * 3600 + 59 * 60 + 30;
@@ -193,6 +140,8 @@ function PriceBreakdownModal({ data, onClose }) {
 
 /* ─── Mobile Plan Card ──────────────────────────────────────────────────── */
 function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
+  const descLines = (plan.descriptionLines ?? []).map(d => d.lineText);
+
   return (
     <div
       className="relative bg-white rounded-[32px]
@@ -200,7 +149,6 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                  flex flex-col items-start w-full"
       style={{ gap: '48px', padding: '48px 24px' }}
     >
-      {/* Plan title — 24px gradient */}
       <h3
         className="font-inter font-bold bg-gradient-to-b from-[#10b981] to-[#00664c]
                    bg-clip-text text-transparent shrink-0"
@@ -209,33 +157,30 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
         {plan.title}
       </h3>
 
-      {/* Price row */}
       <div className="flex items-start gap-2 leading-none shrink-0">
         <span className="font-inter font-light text-[16px] text-black tracking-[0.2592px]"
               style={{ lineHeight: '1.2', marginTop: '4px' }}>
           ₹
         </span>
         <span className="font-inter font-normal text-[48px] text-[#ccc] leading-none line-through decoration-solid">
-          {plan.original}
+          {formatPrice(plan.originalPrice)}
         </span>
         <span className="font-inter font-normal text-[48px] text-black leading-none">
-          {plan.price}
+          {formatPrice(plan.discountedPrice)}
         </span>
         <div className="flex flex-col font-inter font-light text-[16px] text-black tracking-[0.2592px]"
              style={{ lineHeight: '1.2', marginTop: '4px' }}>
-          {plan.unitLines.map((line, i) => <span key={i}>{line}</span>)}
+          <span>INR /</span>
+          <span>{plan.pricePeriod}</span>
         </div>
       </div>
 
-      {/* Desc + CTA buttons */}
       <div className="flex flex-col gap-6 items-start w-full shrink-0">
-        {/* 12px desc text (Mobile/Status) */}
         <p className="font-inter font-medium text-black w-full"
            style={{ fontSize: '12px', lineHeight: '1.5', letterSpacing: '0.3883px' }}>
-          {plan.descLines[0]}<br />{plan.descLines[1]}
+          {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
         </p>
 
-        {/* Primary CTA */}
         <button
           type="button"
           onClick={() => onGetStarted(plan)}
@@ -247,12 +192,11 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[#004172] focus-visible:ring-offset-2"
           style={{ height: '40px', fontSize: '16px', letterSpacing: '0.2592px', background: '#004172' }}
         >
-          {plan.cta}
+          {plan.ctaText}
           <div className="absolute inset-0 rounded-[inherit] pointer-events-none
                           shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.08)]" />
         </button>
 
-        {/* Secondary — see breakdown */}
         <button
           type="button"
           onClick={() => onBreakdown(planIndex)}
@@ -267,22 +211,20 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
         </button>
       </div>
 
-      {/* Feature list */}
       <div className="flex flex-col gap-6 items-start w-full shrink-0">
-        {FEATURES.map(({ icon, label }, i) => (
+        {(plan.features ?? []).map((f, i) => (
           <div key={i} className="flex gap-5 items-center w-full">
             <div className="w-6 h-6 shrink-0 flex items-center justify-center overflow-hidden">
-              <img src={icon} alt="" className="w-4 h-4 object-contain" />
+              <img src={resolveIcon(f.iconName)} alt="" className="w-4 h-4 object-contain" />
             </div>
             <p className="font-inter font-medium text-[16px] text-black
                           tracking-[0.5184px] leading-[28px] flex-1 min-w-0">
-              {label}
+              {f.featureText}
             </p>
           </div>
         ))}
       </div>
 
-      {/* Inner stroke */}
       <div className="absolute inset-0 rounded-[inherit] pointer-events-none
                       shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.08)]" />
     </div>
@@ -291,6 +233,8 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
 
 /* ─── Desktop PlanCard ──────────────────────────────────────────────────── */
 function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
+  const descLines = (plan.descriptionLines ?? []).map(d => d.lineText);
+
   return (
     <div className="relative bg-white rounded-[32px]
                     drop-shadow-[0px_2px_4px_rgba(0,65,114,0.08)]
@@ -308,19 +252,20 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
       <div className="flex items-start gap-2 leading-none">
         <span className="font-inter font-light text-[16px] text-black tracking-[0.2592px] leading-[1.2] mt-1">₹</span>
         <span className="font-inter font-normal text-[48px] text-[#ccc] leading-none line-through decoration-solid">
-          {plan.original}
+          {formatPrice(plan.originalPrice)}
         </span>
         <span className="font-inter font-normal text-[48px] text-black leading-none">
-          {plan.price}
+          {formatPrice(plan.discountedPrice)}
         </span>
         <div className="flex flex-col font-inter font-light text-[16px] text-black tracking-[0.2592px] leading-[1.2] mt-1">
-          {plan.unitLines.map((line, i) => <span key={i}>{line}</span>)}
+          <span>INR /</span>
+          <span>{plan.pricePeriod}</span>
         </div>
       </div>
 
       <div className="flex flex-col gap-6 w-full">
         <p className="font-inter font-medium text-[16px] text-black tracking-[0.2592px] leading-normal">
-          {plan.descLines[0]}<br />{plan.descLines[1]}
+          {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
         </p>
 
         <button
@@ -334,7 +279,7 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                      focus:outline-none focus-visible:ring-2
                      focus-visible:ring-[#004172] focus-visible:ring-offset-2"
         >
-          {plan.cta}
+          {plan.ctaText}
         </button>
 
         <button
@@ -352,14 +297,14 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
       </div>
 
       <div className="flex flex-col gap-6 w-full">
-        {FEATURES.map(({ icon, label }, i) => (
+        {(plan.features ?? []).map((f, i) => (
           <div key={i} className="flex gap-5 items-center w-full">
             <div className="w-6 h-6 shrink-0 flex items-center justify-center overflow-hidden">
-              <img src={icon} alt="" className="w-4 h-4 object-contain" />
+              <img src={resolveIcon(f.iconName)} alt="" className="w-4 h-4 object-contain" />
             </div>
             <p className="font-inter font-medium text-[16px] text-black
                           tracking-[0.5184px] leading-[28px] flex-1 min-w-0">
-              {label}
+              {f.featureText}
             </p>
           </div>
         ))}
@@ -370,12 +315,13 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
 
 /* ─── SubscriptionSection ───────────────────────────────────────────────── */
 export default function SubscriptionSection() {
-  const [secs, setSecs]       = useState(INITIAL_SECS);
+  const [secs, setSecs]           = useState(INITIAL_SECS);
   const [openModal, setOpenModal] = useState(null);
   const [isMobile, setIsMobile]   = useState(
     () => typeof window !== 'undefined' && window.innerWidth < 768,
   );
-  const { showToast } = useCart();
+  const { showToast }             = useCart();
+  const { plans }                 = useSubscriptionPlans();
 
   /* countdown */
   useEffect(() => {
@@ -390,18 +336,41 @@ export default function SubscriptionSection() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  /* build modal data from plans */
+  const modalData = plans.map(plan => ({
+    planTitle:      plan.title,
+    titleColor:     plan.titleColor,
+    subtitle:       plan.subtitle,
+    priceBreakdown: (plan.priceBreakdowns ?? []).map(pb => ({
+      label:      pb.label,
+      original:   pb.originalDisplay,
+      discounted: pb.discountedDisplay,
+    })),
+    youSaved: (plan.savings ?? []).map(s => ({
+      label: s.label,
+      value: s.valueText,
+    })),
+    billingInfo: (plan.billingInfo ?? []).map(b => b.infoText),
+  }));
+
   const handleGetStarted = (plan) => {
-    const isQuarterly = plan.title.toLowerCase().includes('quarterly');
+    const ctaMatch   = /[\d,]+/.exec((plan.ctaText ?? '').replace('₹', ''));
+    const cartPrice  = ctaMatch
+      ? parseInt(ctaMatch[0].replace(/,/g, ''), 10)
+      : plan.discountedPrice;
+    const origPrice  = plan.planType === 'quarterly'
+      ? plan.originalPrice * 3
+      : plan.originalPrice;
+    const priceLabel = (plan.descriptionLines ?? []).map(d => d.lineText).join(' ');
+
     showToast({
       image:         subscriptionToastImg,
       label:         'Subscription',
       name:          plan.title,
       type:          'subscription',
-      price:         isQuarterly ? 297  : 999,
-      originalPrice: isQuarterly ? 447  : 1999,
-      priceLabel:    isQuarterly
-        ? 'Start at ₹297 for 3 months (₹99/month), then continue at ₹99/month.'
-        : 'Billed ₹999/year. Save upto ₹1,000 on your dedicated care.',
+      price:         cartPrice,
+      originalPrice: origPrice,
+      priceLabel:    priceLabel,
       description:   'Complete care with priority support, faster consultations, and continuous health tracking',
     });
   };
@@ -417,7 +386,6 @@ export default function SubscriptionSection() {
         <section id="subscription" className="bg-white flex flex-col items-center w-full px-6 py-12"
                  style={{ gap: '10px' }}>
 
-          {/* Heading block */}
           <div className="flex flex-col items-center text-center w-full" style={{ gap: '48px' }}>
             <h2 className="font-inter font-bold text-black w-full"
                 style={{ fontSize: '48px', lineHeight: '1' }}>
@@ -431,10 +399,7 @@ export default function SubscriptionSection() {
             </p>
           </div>
 
-          {/* Plans block — countdown + cards */}
           <div className="flex flex-col items-center w-full" style={{ gap: '24px' }}>
-
-            {/* Countdown banner */}
             <div
               className="flex flex-col items-center justify-center rounded-[24px] w-full"
               style={{
@@ -454,11 +419,10 @@ export default function SubscriptionSection() {
               </p>
             </div>
 
-            {/* Plan cards */}
             <div className="flex flex-col w-full" style={{ gap: '24px' }}>
-              {PLANS.map((plan, idx) => (
+              {plans.map((plan, idx) => (
                 <MobilePlanCard
-                  key={plan.title}
+                  key={plan.id}
                   plan={plan}
                   planIndex={idx}
                   onBreakdown={setOpenModal}
@@ -470,10 +434,10 @@ export default function SubscriptionSection() {
         </section>
 
         <AnimatePresence>
-          {openModal !== null && (
+          {openModal !== null && modalData[openModal] && (
             <PriceBreakdownModal
               key="price-modal"
-              data={MODAL_DATA[openModal]}
+              data={modalData[openModal]}
               onClose={() => setOpenModal(null)}
             />
           )}
@@ -492,7 +456,6 @@ export default function SubscriptionSection() {
                    pt-[120px] pb-[60px]
                    px-4 sm:px-8 lg:px-[120px]"
       >
-        {/* Heading */}
         <div className="flex flex-col gap-12 items-center text-center">
           <h2 className="font-inter font-bold leading-none text-black
                          text-[clamp(36px,6.1vw,88px)] whitespace-nowrap">
@@ -507,10 +470,7 @@ export default function SubscriptionSection() {
           </p>
         </div>
 
-        {/* Plans container */}
         <div className="flex flex-col gap-6 items-center w-full">
-
-          {/* Countdown banner */}
           <div
             className="subscription-section-bg
                        flex gap-3 items-center justify-center flex-wrap
@@ -528,11 +488,10 @@ export default function SubscriptionSection() {
             </span>
           </div>
 
-          {/* Two plan cards */}
           <div className="flex flex-col xl:flex-row gap-6 justify-center w-full max-w-[1020px]">
-            {PLANS.map((plan, idx) => (
+            {plans.map((plan, idx) => (
               <PlanCard
-                key={plan.title}
+                key={plan.id}
                 plan={plan}
                 planIndex={idx}
                 onBreakdown={setOpenModal}
@@ -542,7 +501,6 @@ export default function SubscriptionSection() {
           </div>
         </div>
 
-        {/* Disclaimer */}
         <div
           className="bg-[rgba(255,255,255,0.8)] rounded-[24px]
                      drop-shadow-[0px_2px_4px_rgba(0,65,114,0.08)]
@@ -567,10 +525,10 @@ export default function SubscriptionSection() {
       </section>
 
       <AnimatePresence>
-        {openModal !== null && (
+        {openModal !== null && modalData[openModal] && (
           <PriceBreakdownModal
             key="price-modal"
-            data={MODAL_DATA[openModal]}
+            data={modalData[openModal]}
             onClose={() => setOpenModal(null)}
           />
         )}

@@ -397,6 +397,60 @@ async function main() {
     ],
   });
 
+  // ─── Product Lifestyle Cards ─────────────────
+  await prisma.productLifestyleCard.deleteMany({});
+
+  const S0 = '[{"text":"Track your "},{"text":"baseline weight and body fat","color":"#d29300"},{"text":" first thing in the morning for the most consistent data."}]';
+  const S1 = '[{"text":"Monitor "},{"text":"muscle mass gains and hydration levels","color":"#d82525"},{"text":" to optimize your recovery and training intensity."}]';
+  const S2 = '[{"text":"Visualize "},{"text":"long-term trends","color":"#30956a"},{"text":" through the app, helping you stay motivated toward your fitness goals."}]';
+  const S3 = '[{"text":"Use "},{"text":"visceral fat and metabolic age data","color":"#008eb1"},{"text":" to make informed decisions about your diet and lifestyle."}]';
+
+  const B0 = '[{"text":"Morning check","color":"#008eb1"},{"text":" before your day starts\\nStay informed before your routine begins."}]';
+  const B1 = '[{"text":"Track after activity or stress","color":"#008eb1"},{"text":"\\nUnderstand how your body responds in real time."}]';
+  const B2 = '[{"text":"After a long day","color":"#30956a"},{"text":"\\nStress leaves signals. Now you can see them."}]';
+  const B3 = '[{"text":"Before sleep","color":"#008eb1"},{"text":"\\nEnd the day with clarity, not assumptions."}]';
+
+  const G0 = '[{"text":"Start your day with a quick glucose check. ","color":"#d29300"},{"text":"Understand fasting levels early and make smarter food and activity decisions throughout the day."}]';
+  const G1 = '[{"text":"Measure glucose after meals to see how your body reacts. ","color":"#d82525"},{"text":"Identify foods causing spikes and adjust portions for better daily control."}]';
+  const G2 = '[{"text":"Track glucose around physical activity. ","color":"#3cba84"},{"text":"Ensure levels stay balanced to avoid sudden drops or fatigue during workouts or daily movement routines."}]';
+  const G3 = '[{"text":"Check glucose before bed to prevent overnight risks. ","color":"#00b2dd"},{"text":"Sleep with confidence knowing your levels are within a safe and stable range."}]';
+
+  await prisma.productLifestyleCard.createMany({
+    data: [
+      // ── scale ──
+      { productId: 'scale', imageKey: 'lifestyle1', captionJson: S0, displayOrder: 1 },
+      { productId: 'scale', imageKey: 'scale2',     captionJson: S1, displayOrder: 2 },
+      { productId: 'scale', imageKey: 'lifestyle2', captionJson: S2, displayOrder: 3 },
+      { productId: 'scale', imageKey: 'scale4',     captionJson: S3, displayOrder: 4 },
+      // ── bp ──
+      { productId: 'bp', imageKey: 'bp1',       captionJson: B0, displayOrder: 1 },
+      { productId: 'bp', imageKey: 'lifestyle3', captionJson: B1, displayOrder: 2 },
+      { productId: 'bp', imageKey: 'lifestyle4', captionJson: B2, displayOrder: 3 },
+      { productId: 'bp', imageKey: 'bp4',        captionJson: B3, displayOrder: 4 },
+      // ── glucose ──
+      { productId: 'glucose', imageKey: 'glucose1', captionJson: G0, displayOrder: 1 },
+      { productId: 'glucose', imageKey: 'glucose2', captionJson: G1, displayOrder: 2 },
+      { productId: 'glucose', imageKey: 'glucose3', captionJson: G2, displayOrder: 3 },
+      { productId: 'glucose', imageKey: 'glucose4', captionJson: G3, displayOrder: 4 },
+      // ── bp-essentials: scale0 scale2 bp1 bp2 ──
+      { productId: 'bp-essentials', imageKey: 'lifestyle1', captionJson: S0, displayOrder: 1 },
+      { productId: 'bp-essentials', imageKey: 'lifestyle2', captionJson: S2, displayOrder: 2 },
+      { productId: 'bp-essentials', imageKey: 'lifestyle3', captionJson: B1, displayOrder: 3 },
+      { productId: 'bp-essentials', imageKey: 'lifestyle4', captionJson: B2, displayOrder: 4 },
+      // ── diabetes-essentials: scale0 scale2 glucose0 glucose1 ──
+      { productId: 'diabetes-essentials', imageKey: 'lifestyle1', captionJson: S0, displayOrder: 1 },
+      { productId: 'diabetes-essentials', imageKey: 'lifestyle2', captionJson: S2, displayOrder: 2 },
+      { productId: 'diabetes-essentials', imageKey: 'glucose1',   captionJson: G0, displayOrder: 3 },
+      { productId: 'diabetes-essentials', imageKey: 'glucose2',   captionJson: G1, displayOrder: 4 },
+      // ── complete-essentials: scale0 bp1 glucose0 glucose2 ──
+      { productId: 'complete-essentials', imageKey: 'lifestyle1', captionJson: S0, displayOrder: 1 },
+      { productId: 'complete-essentials', imageKey: 'lifestyle3', captionJson: B1, displayOrder: 2 },
+      { productId: 'complete-essentials', imageKey: 'glucose1',   captionJson: G0, displayOrder: 3 },
+      { productId: 'complete-essentials', imageKey: 'glucose3',   captionJson: G2, displayOrder: 4 },
+    ],
+  });
+  console.log('  ✓ Product lifestyle cards');
+
   // ─── Footer ──────────────────────────────────
   await prisma.footerLink.deleteMany({});
   await prisma.footerSection.deleteMany({});
@@ -439,12 +493,12 @@ async function main() {
   await prisma.navItem.deleteMany({});
   await prisma.navItem.createMany({
     data: [
-      { label: 'Home',     url: '/',        displayOrder: 1 },
-      { label: 'Services', url: '/services',displayOrder: 2 },
-      { label: 'Products', url: '/products',displayOrder: 3 },
-      { label: 'Plans',    url: '/plans',   displayOrder: 4 },
-      { label: 'About',    url: '/about',   displayOrder: 5 },
-      { label: 'Contact',  url: '/contact', displayOrder: 6 },
+      { label: 'Home',         url: '/',             displayOrder: 1 },
+      { label: 'Total Care',   url: '/total-care',   displayOrder: 2 },
+      { label: 'Our Services', url: '/our-services', displayOrder: 3 },
+      { label: 'Our Team',     url: '/our-team',     displayOrder: 4 },
+      { label: 'About Us',     url: '/about-us',     displayOrder: 5 },
+      { label: 'Join Us',      url: '/join-us',      displayOrder: 6 },
     ],
   });
   console.log('  ✓ Navigation');
@@ -488,17 +542,20 @@ async function main() {
     data: [
       // ── bp (Blood Pressure Monitor) ──
       { productId: 'bp', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/bg-bp-monitor.jpg',             altText: 'BP Monitor card image',             displayOrder: 1 },
-      { productId: 'bp', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/Hero_img_1.png',             altText: 'BP Monitor hero image',             displayOrder: 2 },
+      { productId: 'bp', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_1.png',             altText: 'BP Monitor hero image',             displayOrder: 2 },
+      { productId: 'bp', imageType: 'explore_hero',    imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/Hero_img_1.png',                        altText: 'BP Monitor explore hero',           displayOrder: 10 },
       { productId: 'bp', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Omron_HEM-7140T1-AP_BP_Monitor_assets/Omron_BP_Monitor-HEM-7140-AP_bill_img.png', altText: 'BP Monitor bundle thumbnail',        displayOrder: 3 },
 
       // ── glucose (Glucose Monitor) ──
       { productId: 'glucose', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/bg-glucose-monitor.jpg',             altText: 'Glucose Monitor card image',      displayOrder: 1 },
-      { productId: 'glucose', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/Hero_img_1.png',             altText: 'Glucose Monitor hero image',      displayOrder: 2 },
+      { productId: 'glucose', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_3.png',             altText: 'Glucose Monitor hero image',      displayOrder: 2 },
+      { productId: 'glucose', imageType: 'explore_hero',    imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/Hero_img_1.png', altText: 'Glucose Monitor explore hero',     displayOrder: 10 },
       { productId: 'glucose', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/RGB_GlucoBuddy_Glucometer_assets/RGB_Glucometer_bill_img.png', altText: 'Glucose Monitor bundle thumbnail', displayOrder: 3 },
 
       // ── scale (Body Composition Scale) ──
       { productId: 'scale', imageType: 'card',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/bg-smart-scale.jpg',             altText: 'Smart Scale card image',      displayOrder: 1 },
-      { productId: 'scale', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Hero_img.png',             altText: 'Smart Scale hero image',      displayOrder: 2 },
+      { productId: 'scale', imageType: 'hero',             imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_2.png',             altText: 'Smart Scale hero image',      displayOrder: 2 },
+      { productId: 'scale', imageType: 'explore_hero',    imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Hero_img.png',                        altText: 'Smart Scale explore hero',    displayOrder: 10 },
       { productId: 'scale', imageType: 'bundle_component', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/totalcare_assets/Total%20Care%20Assets/Total%20Care%20Assets/Indevidual%20listing%20Assests/Meditive_Body_Composition_Scale_Assets/Meditive_Body_Composition_Scale_bill_img.png', altText: 'Smart Scale bundle thumbnail', displayOrder: 3 },
 
       // ── complete-essentials (Bundle) ──
@@ -637,6 +694,50 @@ async function main() {
     { productId: 'bp', highlightText: 'AI insights + doctor support',               displayOrder: 4 },
   ]});
   console.log('  ✓ Product highlights');
+
+  // ─── Hero Section Config ─────────────────────
+  await prisma.heroSectionConfig.deleteMany({});
+  await prisma.heroSectionConfig.create({
+    data: {
+      heading:                   'Total Care',
+      subheading:                'Health Tracking meets Real world Healthcare',
+      ctaPrimary:                'View Plans',
+      ctaSecondary:              'How it Works',
+      prescriptionsCount:        15,
+      labTestsCount:             9,
+      allergiesCount:            4,
+      allergyList:               "Penicillin,Plant's oil (urushiol),Cephalosporins,Aspirin",
+      nutritionMealType:         'Breakfast',
+      nutritionFoodName:         'Poha',
+      nutritionCalories:         320,
+      nutritionCalorieUnit:      'KCAL',
+      nutritionRecommendation:   'Low Oil Recommended',
+      nutritionRecommendationTip:'Keep peanuts light. Add veggies for fiber.',
+      nutritionFoodImageUrl:     null,
+      emergencyAmbulanceTime:    '30',
+      emergencyConciergeTime:    '30',
+      emergencyContactName:      'Aaditya',
+      emergencyContactRelation:  'Son',
+      healthSyncTitle:           'Auto Health Sync',
+      healthSyncDescription:     'Connect Apple / Google Health connect for real-time tracking, no manual input.',
+      healthSyncProfileImageUrl: null,
+      healthDevicesTitle:        'Health Devices',
+      healthDevicesDescription:  'Save more, same care at low cost',
+      healthDevicesImageUrl:     null,
+    },
+  });
+  console.log('  ✓ Hero section config');
+
+  // ─── Works With Card Images ──────────────────
+  await prisma.worksWithCardImage.deleteMany({});
+  await prisma.worksWithCardImage.createMany({
+    data: [
+      { productId: 'bp',      imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_1.png', altText: 'Omron BP Monitor app screen' },
+      { productId: 'scale',   imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_2.png', altText: 'Meditive Scale app screen' },
+      { productId: 'glucose', imageUrl: 'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Testimonials_section/Display_img_3.png', altText: 'GlucoBuddy app screen' },
+    ],
+  });
+  console.log('  ✓ Works With card images');
 
   console.log('\n✅ Database seeded successfully!');
 }

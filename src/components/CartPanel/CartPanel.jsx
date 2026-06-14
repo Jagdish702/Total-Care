@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
+import { usePromoText } from '../../hooks/usePromoText';
 
 /* ── Add-on images ─────────────────────────────────────────────────────── */
 import addonOmronImg     from '../../assets/cart/addon-omron.png';
@@ -118,6 +119,7 @@ function DisclaimerCard({ text }) {
 function CartItemCard({ item, onUpdateQty, onRemove }) {
   const isSub = item.type === 'subscription';
   const fmt   = (n) => n ? `₹${Number(n).toLocaleString('en-IN')}` : '';
+  const promoText = usePromoText();
 
   /* Purple gradient style for product promo line — matches Figma exactly */
   const purpleGrad = {
@@ -168,7 +170,7 @@ function CartItemCard({ item, onUpdateQty, onRemove }) {
               className="font-inter font-medium text-[12px] leading-[20px] tracking-[0.3883px] truncate w-full"
               style={purpleGrad}
             >
-              First 3 months of TotalCare subscription FREE
+              {'First ' + promoText}
             </p>
           )}
           {isSub && item.priceLabel && (
@@ -241,6 +243,7 @@ const ADD_ONS = [
 
 function AddOnsSection({ onAddToCart, onRemove, cartItems }) {
   const fmt = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
+  const promoText = usePromoText();
 
   return (
     <div className="flex flex-col gap-3 w-full overflow-hidden">
@@ -255,7 +258,7 @@ function AddOnsSection({ onAddToCart, onRemove, cartItems }) {
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
           }}>
-          Get first 3 months of TotalCare subscription FREE with any device purchase.
+          {'Get first ' + promoText + ' with any device purchase.'}
         </p>
       </div>
 

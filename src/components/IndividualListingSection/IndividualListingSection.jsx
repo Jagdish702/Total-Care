@@ -4,10 +4,9 @@ import { motion } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { useProducts } from '../../hooks/useProducts';
 import { PRODUCT_CARD_ASSETS } from '../../assets/productImages';
+import { usePromoText } from '../../hooks/usePromoText';
 
 /* ─── Design tokens ─────────────────────────────────────────────────────────── */
-const SUBSCRIPTION_TEXT = '3 months of TotalCare subscription FREE';
-
 const COMBO_DEFAULT_GRADIENT = 'linear-gradient(181.70deg, rgba(255,255,255,0) 47.215%, rgba(255,255,255,0.4) 62.579%, rgba(255,255,255,0.8) 96.412%)';
 const COMBO_HOVER_GRADIENT   = 'linear-gradient(181.70deg, rgba(255,255,255,0) 3.5879%, rgba(255,255,255,0.855) 31.799%, rgba(255,255,255,0.95) 96.412%)';
 const INDIV_DEFAULT_GRADIENT = 'linear-gradient(183.51deg, rgba(255,255,255,0) 47.215%, rgba(255,255,255,0.48) 62.579%, rgba(255,255,255,0.8) 96.412%)';
@@ -64,12 +63,13 @@ function ChevronIcon({ expanded, onClick }) {
 }
 
 function SubscriptionText() {
+  const promoText = usePromoText();
   return (
     <p
       className="font-inter font-medium text-[12px] tracking-[0.3883px] leading-[20px] w-[296px] shrink-0"
       style={{ background: PURPLE_GRADIENT, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}
     >
-      {SUBSCRIPTION_TEXT}
+      {promoText}
     </p>
   );
 }

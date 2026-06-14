@@ -11,64 +11,7 @@ const gradientStyle = {
   backgroundClip: 'text',
 };
 
-/* ─── Product tip data ───────────────────────────────────────────────────── */
-const SCALE_TIPS = {
-  id: 'scale',
-  title: 'Meditive Body Composition Scale',
-  tips: [
-    'Place the scale on a hard, flat surface. Avoid carpets, rugs, and mats.',
-    'Stand barefoot with clean, dry feet on the metal sensors.',
-    'Stand still with your weight evenly distributed on both feet.',
-    'Weigh yourself at the same time each day, ideally in the morning before eating or drinking.',
-    'Avoid measuring immediately after exercise.',
-    'Keep the scale in one location and recalibrate to 0.0 if moved.',
-  ],
-  image: tipsMeditiveImg,
-  imageAlt: 'Person standing on Meditive Body Composition Scale',
-  imageLabel: null,
-};
-
-const BP_TIPS = {
-  id: 'bp',
-  title: 'Omron BP Monitor — HEM 7140-AP',
-  tips: [
-    'Measure at the same time of day every day (within 1 hour after getting up and before bed-time are recommended).',
-    'No bathing, drinking alcohol or caffeine, smoking, exercising or eating 30 minutes before taking a measurement.',
-    'Use appropriate arm cuff of small, medium, large & wide size.',
-  ],
-  image: tipsOmronImg,
-  imageAlt: 'Correct posture for upper arm blood pressure measurement',
-  imageLabel: 'Correct posture for upper arm blood pressure measurement',
-};
-
-const GLUCOSE_TIPS = {
-  id: 'glucose',
-  title: 'GlucoBuddy Glucometer',
-  tips: [
-    'Ensure your hands are clean and completely dry before testing.',
-    'Always use fresh test strips within their expiration date.',
-    'Avoid using samples from alternative sites like the forearm unless advised.',
-    'Apply the blood drop to the correct edge of the test strip.',
-    'Allow the strip to completely "fill" with the blood droplet.',
-  ],
-  image: glucobuddyImg,
-  imageAlt: 'GlucoBuddy glucometer accurate measurement tips',
-  imageLabel: null,
-};
-
-/* ─── Product → tips rows mapping (hardcoded fallback) ──────────────────── */
-const PRODUCT_TIPS_MAP = {
-  'complete-essentials': [SCALE_TIPS, BP_TIPS, GLUCOSE_TIPS],
-  'bp-essentials':       [SCALE_TIPS, BP_TIPS],
-  'diabetes-essentials': [SCALE_TIPS, GLUCOSE_TIPS],
-  'scale':               [SCALE_TIPS],
-  'glucose':             [GLUCOSE_TIPS],
-  'bp':                  [BP_TIPS],
-};
-
-const DEFAULT_TIPS = [SCALE_TIPS, BP_TIPS];
-
-/* ─── Dynamic DB helpers ─────────────────────────────────────────────────── */
+/* ─── DB helpers ─────────────────────────────────────────────────────────── */
 
 const TIPS_META = {
   'scale':   { image: tipsMeditiveImg, imageAlt: 'Person standing on Meditive Body Composition Scale', imageLabel: null,        title: 'Meditive Body Composition Scale' },
@@ -77,16 +20,17 @@ const TIPS_META = {
 };
 
 function buildTipRows(product) {
-  if (!product) return DEFAULT_TIPS;
+  if (!product) return [];
 
   // Individual product with DB tips
   if ((product.tips ?? []).length > 0) {
-    const meta = TIPS_META[product.id] || {};
+    const meta  = TIPS_META[product.id] || {};
+    const dbImg = (product.images ?? []).find(img => img.imageType === 'tips')?.imageUrl ?? null;
     return [{
       id: product.id,
       title: meta.title || product.name,
       tips: product.tips.map(t => t.tipText),
-      image: meta.image || null,
+      image: dbImg || meta.image || null,
       imageAlt: meta.imageAlt || product.name,
       imageLabel: meta.imageLabel || null,
     }];
@@ -97,12 +41,13 @@ function buildTipRows(product) {
     const rows = product.bundleItems
       .filter(bi => (bi.component.tips ?? []).length > 0)
       .map(bi => {
-        const meta = TIPS_META[bi.component.id] || {};
+        const meta  = TIPS_META[bi.component.id] || {};
+        const dbImg = (bi.component.images ?? []).find(img => img.imageType === 'tips')?.imageUrl ?? null;
         return {
           id: bi.component.id,
           title: meta.title || bi.component.name,
           tips: bi.component.tips.map(t => t.tipText),
-          image: meta.image || null,
+          image: dbImg || meta.image || null,
           imageAlt: meta.imageAlt || bi.component.name,
           imageLabel: meta.imageLabel || null,
         };
@@ -110,8 +55,7 @@ function buildTipRows(product) {
     if (rows.length > 0) return rows;
   }
 
-  // Hardcoded fallback
-  return PRODUCT_TIPS_MAP[product.id] || DEFAULT_TIPS;
+  return [];
 }
 
 /* ─── Cart icon (inline SVG) ─────────────────────────────────────────────── */

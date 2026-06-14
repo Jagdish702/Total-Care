@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import Header from '../Header/Header';
+import { usePromoText } from '../../hooks/usePromoText';
 
 /* ── Asset imports ─────────────────────────────────────────────────────── */
 import iconAmbulance  from '../../assets/checkout/icon-ambulance.svg';
@@ -186,6 +187,7 @@ function StepperBar() {
    ReviewProductCard  — device item in checkout
 ═══════════════════════════════════════════════════════════════════════════ */
 function ReviewProductCard({ item }) {
+  const promoText = usePromoText();
   const purpleGradientStyle = {
     backgroundImage: 'linear-gradient(93.16deg, rgb(177, 137, 255) 0%, rgb(46, 0, 139) 96.07%)',
     WebkitBackgroundClip: 'text',
@@ -215,7 +217,7 @@ function ReviewProductCard({ item }) {
           </p>
           <p className="font-inter font-medium text-[11px] md:text-[12px] leading-[18px] md:leading-[20px] tracking-[0.3883px]"
             style={purpleGradientStyle}>
-            First 3 months of TotalCare subscription FREE
+            {'First ' + promoText}
           </p>
           {item.description && (
             <p className="font-inter font-light text-[12px] md:text-[16px] text-[#808080] tracking-[0.3883px] md:tracking-[0.5184px] leading-[20px] md:leading-[28px] line-clamp-2 w-full">
@@ -461,6 +463,7 @@ function PriceBreakdown({ items, discount }) {
 export default function CheckoutPage() {
   const { cartItems } = useCart();
   const navigate      = useNavigate();
+  const promoText     = usePromoText();
   const [appliedDiscount, setAppliedDiscount] = useState(null);
 
   const devices       = cartItems.filter(i => i.type === 'product');
@@ -544,7 +547,7 @@ export default function CheckoutPage() {
                     className="font-inter font-medium text-[12px] leading-[20px] tracking-[0.3883px]"
                     style={purplePromoStyle}
                   >
-                    Get first 3 months of TotalCare subscription FREE with any device purchase.
+                    {'Get first ' + promoText + ' with any device purchase.'}
                   </p>
                 </div>
 
