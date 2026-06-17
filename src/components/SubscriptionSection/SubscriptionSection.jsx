@@ -5,7 +5,7 @@ import ambulanceIcon        from '../../assets/subscription/icon-ambulance.svg';
 import specialistIcon       from '../../assets/subscription/icon-specialist.svg';
 import conciergeIcon        from '../../assets/subscription/icon-concierge.svg';
 import medicineIcon         from '../../assets/subscription/icon-medicine.svg';
-import subscriptionToastImg from '../../assets/product-explore/cart-toast-subscription.png';
+import subscriptionToastImg from '../../assets/product-explore/cart-toast-subscription.jpg';
 import { useCart }          from '../../context/CartContext';
 import { useSubscriptionPlans } from '../../hooks/useSubscriptionPlans';
 

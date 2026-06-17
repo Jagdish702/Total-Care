@@ -9,7 +9,7 @@ import addonOmronImg     from '../../assets/cart/addon-omron.png';
 import addonScaleImg     from '../../assets/cart/addon-scale.png';
 import addonCgmImg       from '../../assets/cart/addon-cgm.png';
 import addonGlucoImg     from '../../assets/cart/addon-glucobuddy.png';
-import subscriptionImg   from '../../assets/cart/subscription-card.png';
+import subscriptionImg   from '../../assets/cart/subscription-card.jpg';
 
 /* ── Payment icons ─────────────────────────────────────────────────────── */
 import payVisa  from '../../assets/cart/pay-visa.png';

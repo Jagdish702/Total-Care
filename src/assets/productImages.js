@@ -19,7 +19,7 @@ import iconWaterDrop     from './products/icons/water drop box.svg';
 import glucobuddyImg    from './product-explore/glucobuddy.png';
 import omronBpImg       from './product-explore/omron-bp.png';
 import meditiveScaleImg from './product-explore/meditive-scale.png';
-import totalCareImg     from './product-explore/totalcare-subscription.png';
+import totalCareImg     from './product-explore/totalcare-subscription.jpg';
 
 // ── ProductShowcase concern images ─────────────────────────────────────────────
 import productBp     from './product-showcase/products/product-bp.jpg';

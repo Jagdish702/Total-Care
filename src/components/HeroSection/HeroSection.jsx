@@ -639,7 +639,7 @@ export default function HeroSection() {
               src={imgPhone}
               alt="Total Care mobile app"
               className="absolute object-contain object-bottom pointer-events-none"
-              style={{ left: '366.9px', top: '69.55px', width: '680.762px', height: '984.192px' }}
+              style={{ left: '320px', top: '69.55px', width: '680.762px', height: '984.192px' }}
             />
 
             {/* Floating UI cards — staggered pop-in */}

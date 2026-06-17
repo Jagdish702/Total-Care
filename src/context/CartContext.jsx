@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useRef } from 'react';
-import subscriptionImg from '../assets/cart/subscription-card.png';
+import subscriptionImg from '../assets/cart/subscription-card.jpg';
 
 const QUARTERLY_SUB = {
   label: 'Subscription',
