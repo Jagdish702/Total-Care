@@ -194,7 +194,7 @@ function EmergencyCard({ animDelay = 0, ambulanceTime, conciergeTime, contactNam
 
 /** Middle-left: Nutrition tracker */
 function NutritionCard({ animDelay = 0, mealType, foodName, calories, calorieUnit, recommendation, recommendationTip, foodImageUrl }) {
-  const foodSrc = foodImageUrl || imgFood;
+  const foodSrc = foodImageUrl;
   return (
     <div
       className="absolute opacity-80 flex flex-col gap-[8.084px] items-center
@@ -237,7 +237,7 @@ function NutritionCard({ animDelay = 0, mealType, foodName, calories, calorieUni
 
 /** Bottom-right: Auto Health Sync */
 function HealthSyncCard({ animDelay = 0, title, description, profileImageUrl }) {
-  const profileSrc = profileImageUrl || imgProfile;
+  const profileSrc = profileImageUrl;
   return (
     <div
       className="absolute opacity-80 flex flex-col items-center gap-[17.389px]"
@@ -261,7 +261,7 @@ function HealthSyncCard({ animDelay = 0, title, description, profileImageUrl }) 
 
 /** Bottom-left: Health Devices */
 function HealthDevicesCard({ animDelay = 0, title, description, devicesImageUrl }) {
-  const devicesSrc = devicesImageUrl || imgDevices;
+  const devicesSrc = devicesImageUrl;
   return (
     <div
       className="absolute opacity-80 flex flex-col items-center gap-[17.389px]"

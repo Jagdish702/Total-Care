@@ -11,7 +11,6 @@ import TechSpecsSection from './TechSpecsSection';
 import FAQSection from '../FAQSection/FAQSection';
 import FooterSection from '../FooterSection/FooterSection';
 import { useProduct } from '../../hooks/useProducts';
-import { PRODUCT_HERO_IMAGES } from '../../assets/productImages';
 
 function ProductNotFound({ id }) {
   return (
@@ -70,9 +69,10 @@ export default function ProductExplorePage() {
   const { id }              = useParams();
   const { product, loading, error } = useProduct(id);
 
-  // Prefer GCP hero image from API; fall back to static local import
   const heroImage = product
-    ? ((product.images ?? []).find(img => img.imageType === 'explore_hero')?.imageUrl ?? PRODUCT_HERO_IMAGES[product.id] ?? null)
+    ? ((product.images ?? []).find(img => img.imageType === 'explore_hero')?.imageUrl
+       ?? (product.images ?? []).find(img => img.imageType === 'hero')?.imageUrl
+       ?? null)
     : null;
   const productWithImage = product
     ? { ...product, image: heroImage }

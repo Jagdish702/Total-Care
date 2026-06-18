@@ -6,26 +6,6 @@ import { useCart } from '../../context/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard, GlassPanel, CardTag, CardStat, StatNum, StatUnit, CardDivider } from '../shared/CardPrimitives';
 
-/* ─── Assets — product images ─────────────────────────────────────────────── */
-import omronProduct      from '../../assets/products/devices/omron-product.jpg';
-import meditiveProduct   from '../../assets/products/devices/meditive-product.jpg';
-import glucoProduct      from '../../assets/products/devices/glucobuddy-product.jpg';
-
-/* ─── Assets — trust banners ──────────────────────────────────────────────── */
-import trustBanner       from '../../assets/products/devices/omron-trust-banner.jpg';
-
-/* ─── Assets — hero / lifestyle ───────────────────────────────────────────── */
-import omronHero         from '../../assets/products/devices/omron-hero.jpg';
-import meditiveHero      from '../../assets/products/devices/meditive-hero.jpg';
-import glucoHero         from '../../assets/products/devices/glucobuddy-hero.jpg';
-
-/* ─── Assets — testimonial avatars ────────────────────────────────────────── */
-import userRohit         from '../../assets/products/devices/user-rohit.png';
-import userAyush         from '../../assets/products/devices/user-ayush.png';
-import userNeha          from '../../assets/products/devices/user-neha.jpg';
-
-/* ─── Assets — cart icon ──────────────────────────────────────────────────── */
-
 /* ─── Assets — sparklines ─────────────────────────────────────────────────── */
 import sparklineUp       from '../../assets/products/devices/sparkline-up.png';
 import sparklineDown     from '../../assets/products/devices/sparkline-down.png';
@@ -51,29 +31,10 @@ const VITAL_ICON_MAP = {
 };
 function resolveVitalIcon(name) { return VITAL_ICON_MAP[name] ?? iconHeartFill; }
 
-/* ─── Static assets only — text/prices/testimonials come from DB ──────────── */
 const DEVICE_STATIC = {
-  omron: {
-    productImage:     omronProduct,
-    heroImage:        omronHero,
-    heroLabel:        'OMRON BP MONITOR – HEM-7141',
-    trustBanner,
-    testimonialPhoto: userRohit,
-  },
-  meditive: {
-    productImage:     meditiveProduct,
-    heroImage:        meditiveHero,
-    heroLabel:        'MEDITIVE BODY COMPOSITION SCALE',
-    trustBanner,
-    testimonialPhoto: userAyush,
-  },
-  glucobuddy: {
-    productImage:     glucoProduct,
-    heroImage:        glucoHero,
-    heroLabel:        'RGB GLUCOBUDDY GLUCOMETER',
-    trustBanner,
-    testimonialPhoto: userNeha,
-  },
+  omron:      { heroLabel: 'OMRON BP MONITOR – HEM-7141' },
+  meditive:   { heroLabel: 'MEDITIVE BODY COMPOSITION SCALE' },
+  glucobuddy: { heroLabel: 'RGB GLUCOBUDDY GLUCOMETER' },
 };
 
 const FALLBACK_TABS = [
@@ -438,17 +399,17 @@ export default function ProductDetailSection() {
     (dbProduct?.images ?? []).find(img => img.imageType === type)?.imageUrl ?? null;
 
   const product = {
-    image:       getDbImg('product_detail') ?? staticAssets.productImage,
-    trustBanner: getDbImg('trust_banner')   ?? staticAssets.trustBanner,
+    image:       getDbImg('product_detail'),
+    trustBanner: getDbImg('trust_banner'),
     title:       dbProduct?.name        ?? activeTab?.tabLabel ?? '',
     description: dbProduct?.description ?? '',
   };
   const hero = {
-    image: getDbImg('hero') ?? staticAssets.heroImage,
+    image: getDbImg('hero'),
     label: staticAssets.heroLabel,
   };
   const testimonial = {
-    photo: dbTestimonial?.photoUrl ?? staticAssets.testimonialPhoto,
+    photo: dbTestimonial?.photoUrl,
     name:  dbTestimonial?.personName ?? '',
     quote: dbTestimonial?.quote      ?? '',
   };

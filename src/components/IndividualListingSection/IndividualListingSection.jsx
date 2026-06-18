@@ -21,7 +21,7 @@ function toCardItem(product) {
   const apiCardImage = (product.images ?? []).find(img => img.imageType === 'card')?.imageUrl ?? null;
   return {
     id:            product.id,
-    bgImage:       apiCardImage ?? assets.bgImage ?? null,  // GCP first, static fallback
+    bgImage:       apiCardImage ?? null,
     icon:          assets.icon ?? null,                     // icons remain static SVGs
     productName:   product.subtitle ?? product.name,
     title:         product.name,

@@ -7,12 +7,6 @@ import { CardDivider } from '../shared/CardPrimitives';
 import bgHighlights from '../../assets/highlights/bg-highlights.png';
 
 // ── Card photos ────────────────────────────────────────────────────────────
-import card1 from '../../assets/highlights/card-1.jpg';
-import card2 from '../../assets/highlights/card-2.jpg';
-import card3 from '../../assets/highlights/card-3.jpg';
-import card4 from '../../assets/highlights/card-4.jpg';
-import card5 from '../../assets/highlights/card-5.jpg';
-import card6 from '../../assets/highlights/card-6.jpg';
 import foodPoha from '../../assets/highlights/food-poha.jpg';
 
 // ── Overlay sparklines ─────────────────────────────────────────────────────
@@ -399,12 +393,12 @@ const CARD_INNER_H = 447;
 
 // Per-card config — photo, label, padding matches desktop PhotoCard, overlay
 const MOBILE_CARD_DATA = [
-  { src: card1, alt: 'Doctor consultation',     label: 'Doctor Consultation',             padX: 16,     padY: 16,     Overlay: RecordsOverlay   },
-  { src: card2, alt: 'AI health companion',     label: 'AI Health Companion',             padX: 16,     padY: 16,     Overlay: VitalsOverlay    },
-  { src: card3, alt: 'Emergency services',      label: 'Concierge &\nEmergency Services', padX: 16,     padY: 16,     Overlay: EmergencyOverlay },
-  { src: card4, alt: 'Smart diet plan',         label: 'Smart Diet Plan',                 padX: 17.791, padY: 35.582, Overlay: NutritionOverlay },
-  { src: card5, alt: 'Device integrations',     label: 'Device Integrations',             padX: 24,     padY: 24,     Overlay: ExerciseOverlay  },
-  { src: card6, alt: 'Medicines and lab tests', label: 'Medicines & Lab Tests',           padX: 24,     padY: 24,     Overlay: LabOverlay       },
+  { alt: 'Doctor consultation',     label: 'Doctor Consultation',             padX: 16,     padY: 16,     Overlay: RecordsOverlay   },
+  { alt: 'AI health companion',     label: 'AI Health Companion',             padX: 16,     padY: 16,     Overlay: VitalsOverlay    },
+  { alt: 'Emergency services',      label: 'Concierge &\nEmergency Services', padX: 16,     padY: 16,     Overlay: EmergencyOverlay },
+  { alt: 'Smart diet plan',         label: 'Smart Diet Plan',                 padX: 17.791, padY: 35.582, Overlay: NutritionOverlay },
+  { alt: 'Device integrations',     label: 'Device Integrations',             padX: 24,     padY: 24,     Overlay: ExerciseOverlay  },
+  { alt: 'Medicines and lab tests', label: 'Medicines & Lab Tests',           padX: 24,     padY: 24,     Overlay: LabOverlay       },
 ];
 
 function MobileHighlightSection({ dbCards = [] }) {
@@ -458,8 +452,8 @@ function MobileHighlightSection({ dbCards = [] }) {
 
       {/* ── 2-column card grid ── */}
       <div ref={gridRef} className="grid grid-cols-2 gap-x-3 gap-y-6 w-full">
-        {MOBILE_CARD_DATA.map(({ src: staticSrc, alt, label, padX, padY, Overlay }, idx) => {
-          const src = dbCards[idx]?.imageUrl ?? staticSrc;
+        {MOBILE_CARD_DATA.map(({ alt, label, padX, padY, Overlay }, idx) => {
+          const src = dbCards[idx]?.imageUrl;
           return (
           <div key={idx} className="flex flex-col items-center gap-[11px]">
 
@@ -517,9 +511,6 @@ function MobileHighlightSection({ dbCards = [] }) {
 
 // ── Main section ───────────────────────────────────────────────────────────
 
-// Static fallback images — used when DB imageUrl is null
-const STATIC_CARD_IMGS = [card1, card2, card3, card4, card5, card6];
-
 export default function HighlightSection() {
   const { cards: dbCards } = useHighlights();
   const [isMobile, setMobile] = useState(() =>
@@ -532,8 +523,7 @@ export default function HighlightSection() {
     return () => window.removeEventListener('resize', update);
   }, []);
 
-  const getImg = (index) =>
-    dbCards[index]?.imageUrl ?? STATIC_CARD_IMGS[index];
+  const getImg = (index) => dbCards[index]?.imageUrl;
 
   /* ── Mobile ── */
   if (isMobile) return <MobileHighlightSection dbCards={dbCards} />;

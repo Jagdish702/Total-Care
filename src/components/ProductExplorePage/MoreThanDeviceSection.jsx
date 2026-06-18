@@ -1,6 +1,3 @@
-import moreThanDeviceImg from '../../assets/product-explore/more-than-device.png';
-
-
 /* ─── CartIcon ────────────────────────────────────────────────────────────── */
 function CartIcon() {
   return (
@@ -17,8 +14,7 @@ function CartIcon() {
 /* ─── MoreThanDeviceSection ───────────────────────────────────────────────── */
 export default function MoreThanDeviceSection({ product }) {
   const features  = (product?.highlights ?? []).map(h => h.highlightText);
-  const dbImage   = (product?.images ?? []).find(img => img.imageType === 'more_than_device')?.imageUrl;
-  const heroImage = (dbImage && dbImage !== '') ? dbImage : moreThanDeviceImg;
+  const heroImage = (product?.images ?? []).find(img => img.imageType === 'more_than_device')?.imageUrl;
 
   return (
     <section className="w-full bg-white">

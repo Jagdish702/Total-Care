@@ -2,11 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { useHealth360 } from '../../hooks/useHealth360';
 
-import img0 from '../../assets/health360/h360-0.jpg';
-import img1 from '../../assets/health360/h360-1.jpg';
-import img2 from '../../assets/health360/h360-2.jpg';
-import img3 from '../../assets/health360/h360-3.jpg';
-
 const STATIC_FRAMES = [
   {
     titleLines: ['Your Health.', 'Connected. Understood.'],
@@ -30,8 +25,6 @@ const STATIC_FRAMES = [
   },
 ];
 
-const STATIC_IMGS = [img0, img1, img2, img3];
-
 // ── Mobile 360 Section ────────────────────────────────────────────────────────
 function MobileHealth360Section() {
   const { frames: dbFrames } = useHealth360();
@@ -42,9 +35,7 @@ function MobileHealth360Section() {
         bullets: (f.bullets ?? []).map(b => typeof b === 'string' ? b : b.bulletText),
       }))
     : STATIC_FRAMES;
-  const IMGS = dbFrames.length > 0
-    ? dbFrames.map((f, i) => f.imageUrl ?? STATIC_IMGS[i])
-    : STATIC_IMGS;
+  const IMGS = dbFrames.map(f => f.imageUrl);
 
   const [activeFrame, setActiveFrame] = useState(0);
   const [dir, setDir] = useState(1); // swipe direction: 1 = forward, -1 = backward
@@ -255,9 +246,7 @@ export default function Health360Section() {
         bullets: (f.bullets ?? []).map(b => typeof b === 'string' ? b : b.bulletText),
       }))
     : STATIC_FRAMES;
-  const IMGS = dbFrames.length > 0
-    ? dbFrames.map((f, i) => f.imageUrl ?? STATIC_IMGS[i])
-    : STATIC_IMGS;
+  const IMGS = dbFrames.map(f => f.imageUrl);
 
   const stickyRef = useRef(null);
   const [activeFrame, setActiveFrame] = useState(0);

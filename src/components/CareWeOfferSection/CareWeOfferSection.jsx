@@ -4,18 +4,9 @@ import { useCareServices } from '../../hooks/useCareServices';
 import { CardDivider } from '../shared/CardPrimitives';
 
 // ── Card background photos ─────────────────────────────────────────────────
-import careCard1    from '../../assets/care/care-card-1.jpg';
 import careCard1b   from '../../assets/care/care-card-1b.jpg';
-import careCard2    from '../../assets/care/care-card-2.jpg';
-import careCard3    from '../../assets/care/care-card-3.jpg';
-import careCard4    from '../../assets/care/care-card-4.jpg';
 import careCard5    from '../../assets/care/care-card-5.jpg';
-import careCard5Exp from '../../assets/care/care-card-5-exp.jpg';
-import careCard6a   from '../../assets/care/care-card-6a.jpg';
-import careCard6b   from '../../assets/care/care-card-6b.jpg';
-import careCard6Exp from '../../assets/care/care-card-6-exp.jpg';
-// Doctor card – expanded state backgrounds + testimonial
-import careCard1Ex1    from '../../assets/care/care-card-1-exp1.jpg';
+// Doctor card – expanded state overlay
 import careCard1Ex2    from '../../assets/care/care-card-1-exp2.jpg';
 import careTestimonial from '../../assets/care/care-testimonial.jpg';
 // Testimonial photos for new cards
@@ -28,10 +19,6 @@ import careTestimonialRuchi  from '../../assets/care/care-testimonial-ruchi.jpg'
 import careDietFood      from '../../assets/care/care-diet-food.jpg';
 import careDeviceDiagram from '../../assets/care/care-device-diagram.png';
 // User-supplied card backgrounds
-import card2Exp     from '../../assets/care/2nd card expand.png';
-import card4Exp     from '../../assets/care/4th card expand.png';
-import card6Default from '../../assets/care/6th card default.png';
-import card6Expand  from '../../assets/care/6th card expand.png';
 
 // ── Card chip icons ────────────────────────────────────────────────────────
 import icoDoctor    from '../../assets/care/doctor.svg';
@@ -63,15 +50,6 @@ import chartLine     from '../../assets/hero/icons/chart-generic.svg';
 
 const E_ICON_MAP  = { icoHeart, icoGlucose, icoPerson, icoSleep };
 const E_CHART_MAP = { heart: chartHeart, line: chartLine };
-
-const TESTIMONIAL_PHOTO_MAP = {
-  doctor:    careTestimonial,
-  ai:        careTestimonialAjay,
-  concierge: careTestimonialSunita,
-  diet:      careTestimonialAjay2,
-  device:    careTestimonialVikas,
-  medicines: careTestimonialRuchi,
-};
 
 // ── Gradient overlays ──────────────────────────────────────────────────────
 const GRAD_COLLAPSED = {
@@ -582,7 +560,7 @@ const CARDS = [
       return (
         <>
           <img
-            src={imageUrl ?? careCard1}
+            src={imageUrl}
             alt="" aria-hidden
             className="absolute inset-0 w-full h-full object-cover max-w-none"
           />
@@ -602,7 +580,7 @@ const CARDS = [
         <>
           <div className="absolute inset-0 overflow-hidden">
             <img
-              src={imageUrl ?? careCard1Ex1}
+              src={imageUrl}
               alt="" aria-hidden
               className="absolute max-w-none"
               style={{ height: '107.72%', left: '-17.81%', top: '-7.73%', width: '117.8%' }}
@@ -628,7 +606,7 @@ const CARDS = [
     renderBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? careCard2}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -637,7 +615,7 @@ const CARDS = [
     renderExpandedBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? card2Exp}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -652,7 +630,7 @@ const CARDS = [
     renderBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? careCard3}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -662,7 +640,7 @@ const CARDS = [
       return (
         <div className="absolute inset-0 overflow-hidden">
           <img
-            src={imageUrl ?? careCard3}
+            src={imageUrl}
             alt="" aria-hidden
             className="absolute h-full max-w-none top-0"
             style={{ left: '-6.95%', width: '106.94%' }}
@@ -679,7 +657,7 @@ const CARDS = [
     renderBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? card4Exp}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -688,7 +666,7 @@ const CARDS = [
     renderExpandedBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? careCard4}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -703,7 +681,7 @@ const CARDS = [
     renderBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? careCard5}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -713,7 +691,7 @@ const CARDS = [
       return (
         <>
           <img
-            src={imageUrl ?? careCard5Exp}
+            src={imageUrl}
             alt="" aria-hidden
             className="absolute inset-0 w-full h-full object-cover max-w-none"
           />
@@ -737,7 +715,7 @@ const CARDS = [
     renderBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? card6Default}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -746,7 +724,7 @@ const CARDS = [
     renderExpandedBg(imageUrl) {
       return (
         <img
-          src={imageUrl ?? card6Expand}
+          src={imageUrl}
           alt="" aria-hidden
           className="absolute inset-0 w-full h-full object-cover max-w-none"
         />
@@ -1015,14 +993,14 @@ function MMedicinePanel() {
   );
 }
 
-// ── Mobile card data (static visual assets only — text comes from useCareServices) ─
+// ── Mobile card data ─
 const MOBILE_CARE_CARDS = [
-  { id: 'doctor',    src: careCard1,    icon: icoDoctor,    inline: true, Panel: MDoctorPanel },
-  { id: 'ai',        src: careCard2,    icon: icoAi,                      Panel: MAiPanel },
-  { id: 'concierge', src: careCard3,    icon: icoConcierge,               Panel: MConciergePanel },
-  { id: 'diet',      src: card4Exp,     icon: icoDiet,                    Panel: MDietPanel },
-  { id: 'device',    src: careCard5,    icon: icoDevice,                  Panel: MDevicePanel },
-  { id: 'medicines', src: card6Default, icon: icoMedicine,                Panel: MMedicinePanel },
+  { id: 'doctor',    icon: icoDoctor,    inline: true, Panel: MDoctorPanel },
+  { id: 'ai',        icon: icoAi,                      Panel: MAiPanel },
+  { id: 'concierge', icon: icoConcierge,               Panel: MConciergePanel },
+  { id: 'diet',      icon: icoDiet,                    Panel: MDietPanel },
+  { id: 'device',    icon: icoDevice,                  Panel: MDevicePanel },
+  { id: 'medicines', icon: icoMedicine,                Panel: MMedicinePanel },
 ];
 
 // ── MobileCareCard ─────────────────────────────────────────────────────────
@@ -1236,7 +1214,7 @@ function MobileCareWeOfferSection({ serviceMap }) {
           const svc = serviceMap[card.id] ?? {};
           const t = (svc.testimonials ?? [])[0];
           const testimonialProps = t ? {
-            photo: t.photoUrl ?? TESTIMONIAL_PHOTO_MAP[card.id] ?? careTestimonial,
+            photo: t.photoUrl,
             name: t.personName,
             badge: t.badgeText,
             quote: t.quote,
@@ -1245,7 +1223,7 @@ function MobileCareWeOfferSection({ serviceMap }) {
             <MobileCareCard
               key={card.id}
               {...card}
-              src={svc.imageUrl ?? card.src}
+              src={svc.imageUrl}
               label={svc.label ?? card.id}
               headline={svc.headline ?? ''}
               accent={svc.accentText ?? ''}
