@@ -208,6 +208,18 @@ async function main() {
 
 
 
+  // ── Hero section images ────────────────────────────────────────────────────
+  await prisma.$executeRaw`
+    UPDATE hero_section_config
+    SET nutrition_food_image_url      = ${'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Hero_section/Puha_img.png'},
+        health_devices_image_url      = ${'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Hero_section/Devices.png'},
+        health_sync_profile_image_url = ${'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Hero_section/Auto_health_sync.png'},
+        bg_image_url                  = ${'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Hero_section/Background.jpg'},
+        phone_image_url               = ${'https://storage.googleapis.com/d2c-ruralos-assets/Total%20Care%20Assets%20Original%20Compressed/Total%20Care%20Assets%20new/HomePage_Assets/Hero_section/Hero.png'}
+    WHERE id = 3
+  `;
+  console.log('✓ Hero section image URLs seeded');
+
   console.log('\n✅ All image URLs seeded successfully.');
   console.log('Replace placeholder GCS URLs with real URLs when available.');
 }

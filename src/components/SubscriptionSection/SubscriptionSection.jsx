@@ -21,6 +21,13 @@ function formatPrice(n) {
   return n.toLocaleString('en-IN');
 }
 
+function getMembershipEndDate(purchasedAt, planType) {
+  const d = new Date(purchasedAt);
+  if (planType === 'quarterly') d.setMonth(d.getMonth() + 3);
+  else d.setFullYear(d.getFullYear() + 1);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
 /* ─── Countdown ─────────────────────────────────────────────────────────── */
 const INITIAL_SECS = 47 * 3600 + 59 * 60 + 30;
 function pad(n) { return String(n).padStart(2, '0'); }
@@ -139,7 +146,7 @@ function PriceBreakdownModal({ data, onClose }) {
 }
 
 /* ─── Mobile Plan Card ──────────────────────────────────────────────────── */
-function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
+function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted, isCurrentPlan, endDate }) {
   const descLines = (plan.descriptionLines ?? []).map(d => d.lineText);
 
   return (
@@ -149,13 +156,23 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                  flex flex-col items-start w-full"
       style={{ gap: '48px', padding: '48px 24px' }}
     >
-      <h3
-        className="font-inter font-bold bg-gradient-to-b from-[#10b981] to-[#00664c]
-                   bg-clip-text text-transparent shrink-0"
-        style={{ fontSize: '24px', lineHeight: '32px' }}
-      >
-        {plan.title}
-      </h3>
+      <div className="flex items-center gap-3 shrink-0">
+        <h3
+          className="font-inter font-bold bg-gradient-to-b from-[#10b981] to-[#00664c]
+                     bg-clip-text text-transparent"
+          style={{ fontSize: '24px', lineHeight: '32px' }}
+        >
+          {plan.title}
+        </h3>
+        {isCurrentPlan && (
+          <span
+            className="font-inter font-medium text-white rounded-[8px] shrink-0"
+            style={{ fontSize: '11px', lineHeight: '1', letterSpacing: '0.3px', padding: '5px 10px', background: '#004172' }}
+          >
+            Current Plan
+          </span>
+        )}
+      </div>
 
       <div className="flex items-start gap-2 leading-none shrink-0">
         <span className="font-inter font-light text-[16px] text-black tracking-[0.2592px]"
@@ -176,10 +193,23 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
       </div>
 
       <div className="flex flex-col gap-6 items-start w-full shrink-0">
-        <p className="font-inter font-medium text-black w-full"
-           style={{ fontSize: '12px', lineHeight: '1.5', letterSpacing: '0.3883px' }}>
-          {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
-        </p>
+        {isCurrentPlan ? (
+          <div className="flex flex-col gap-1">
+            <p className="font-inter font-medium text-black w-full"
+               style={{ fontSize: '12px', lineHeight: '1.5', letterSpacing: '0.3883px' }}>
+              Your membership is active
+            </p>
+            <p className="font-inter font-medium text-[#004172] w-full"
+               style={{ fontSize: '12px', lineHeight: '1.5', letterSpacing: '0.3883px' }}>
+              Valid until {endDate}
+            </p>
+          </div>
+        ) : (
+          <p className="font-inter font-medium text-black w-full"
+             style={{ fontSize: '12px', lineHeight: '1.5', letterSpacing: '0.3883px' }}>
+            {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
+          </p>
+        )}
 
         <button
           type="button"
@@ -192,7 +222,7 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-[#004172] focus-visible:ring-offset-2"
           style={{ height: '40px', fontSize: '16px', letterSpacing: '0.2592px', background: '#004172' }}
         >
-          {plan.ctaText}
+          {isCurrentPlan ? 'Manage Subscription' : plan.ctaText}
           <div className="absolute inset-0 rounded-[inherit] pointer-events-none
                           shadow-[inset_0px_0px_2px_0px_rgba(0,65,114,0.08)]" />
         </button>
@@ -232,7 +262,7 @@ function MobilePlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
 }
 
 /* ─── Desktop PlanCard ──────────────────────────────────────────────────── */
-function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
+function PlanCard({ plan, planIndex, onBreakdown, onGetStarted, isCurrentPlan, endDate }) {
   const descLines = (plan.descriptionLines ?? []).map(d => d.lineText);
 
   return (
@@ -243,11 +273,21 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                     px-6 py-12
                     w-full xl:w-[498px] shrink-0">
 
-      <h3 className="font-inter font-semibold text-[32px] leading-none
-                     bg-gradient-to-b from-[#10b981] to-[#00664c]
-                     bg-clip-text text-transparent">
-        {plan.title}
-      </h3>
+      <div className="flex items-center gap-3">
+        <h3 className="font-inter font-semibold text-[32px] leading-none
+                       bg-gradient-to-b from-[#10b981] to-[#00664c]
+                       bg-clip-text text-transparent">
+          {plan.title}
+        </h3>
+        {isCurrentPlan && (
+          <span
+            className="font-inter font-medium text-white rounded-[8px] shrink-0"
+            style={{ fontSize: '12px', lineHeight: '1', letterSpacing: '0.3px', padding: '6px 12px', background: '#004172' }}
+          >
+            Current Plan
+          </span>
+        )}
+      </div>
 
       <div className="flex items-start gap-2 leading-none">
         <span className="font-inter font-light text-[16px] text-black tracking-[0.2592px] leading-[1.2] mt-1">₹</span>
@@ -264,9 +304,20 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
       </div>
 
       <div className="flex flex-col gap-6 w-full">
-        <p className="font-inter font-medium text-[16px] text-black tracking-[0.2592px] leading-normal">
-          {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
-        </p>
+        {isCurrentPlan ? (
+          <div className="flex flex-col gap-1">
+            <p className="font-inter font-medium text-[16px] text-black tracking-[0.2592px] leading-normal">
+              Your membership is active
+            </p>
+            <p className="font-inter font-medium text-[16px] text-[#004172] tracking-[0.2592px] leading-normal">
+              Valid until {endDate}
+            </p>
+          </div>
+        ) : (
+          <p className="font-inter font-medium text-[16px] text-black tracking-[0.2592px] leading-normal">
+            {descLines[0]}{descLines[1] ? <><br />{descLines[1]}</> : null}
+          </p>
+        )}
 
         <button
           onClick={() => onGetStarted(plan)}
@@ -279,7 +330,7 @@ function PlanCard({ plan, planIndex, onBreakdown, onGetStarted }) {
                      focus:outline-none focus-visible:ring-2
                      focus-visible:ring-[#004172] focus-visible:ring-offset-2"
         >
-          {plan.ctaText}
+          {isCurrentPlan ? 'Manage Subscription' : plan.ctaText}
         </button>
 
         <button
@@ -320,7 +371,7 @@ export default function SubscriptionSection() {
   const [isMobile, setIsMobile]   = useState(
     () => typeof window !== 'undefined' && window.innerWidth < 768,
   );
-  const { showToast }             = useCart();
+  const { showToast, purchasedSubscription } = useCart();
   const { plans }                 = useSubscriptionPlans();
 
   /* countdown */
@@ -368,6 +419,7 @@ export default function SubscriptionSection() {
       label:         'Subscription',
       name:          plan.title,
       type:          'subscription',
+      planType:      plan.planType,
       price:         cartPrice,
       originalPrice: origPrice,
       priceLabel:    priceLabel,
@@ -420,15 +472,20 @@ export default function SubscriptionSection() {
             </div>
 
             <div className="flex flex-col w-full" style={{ gap: '24px' }}>
-              {plans.map((plan, idx) => (
-                <MobilePlanCard
-                  key={plan.id}
-                  plan={plan}
-                  planIndex={idx}
-                  onBreakdown={setOpenModal}
-                  onGetStarted={handleGetStarted}
-                />
-              ))}
+              {plans.map((plan, idx) => {
+                const isCurrent = purchasedSubscription?.planType === plan.planType;
+                return (
+                  <MobilePlanCard
+                    key={plan.id}
+                    plan={plan}
+                    planIndex={idx}
+                    onBreakdown={setOpenModal}
+                    onGetStarted={handleGetStarted}
+                    isCurrentPlan={isCurrent}
+                    endDate={isCurrent ? getMembershipEndDate(purchasedSubscription.purchasedAt, plan.planType) : null}
+                  />
+                );
+              })}
             </div>
           </div>
         </section>
@@ -489,15 +546,20 @@ export default function SubscriptionSection() {
           </div>
 
           <div className="flex flex-col xl:flex-row gap-6 justify-center w-full max-w-[1020px]">
-            {plans.map((plan, idx) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                planIndex={idx}
-                onBreakdown={setOpenModal}
-                onGetStarted={handleGetStarted}
-              />
-            ))}
+            {plans.map((plan, idx) => {
+              const isCurrent = purchasedSubscription?.planType === plan.planType;
+              return (
+                <PlanCard
+                  key={plan.id}
+                  plan={plan}
+                  planIndex={idx}
+                  onBreakdown={setOpenModal}
+                  onGetStarted={handleGetStarted}
+                  isCurrentPlan={isCurrent}
+                  endDate={isCurrent ? getMembershipEndDate(purchasedSubscription.purchasedAt, plan.planType) : null}
+                />
+              );
+            })}
           </div>
         </div>
 

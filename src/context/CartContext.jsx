@@ -32,9 +32,10 @@ const CartContext = createContext(null);
 let _idCounter = 1;
 
 export function CartProvider({ children }) {
-  const [toast,       setToast]      = useState(null);
-  const [cartItems,   setCartItems]  = useState([]);
-  const [isCartOpen,  setIsCartOpen] = useState(false);
+  const [toast,                 setToast]                = useState(null);
+  const [cartItems,             setCartItems]            = useState([]);
+  const [isCartOpen,            setIsCartOpen]           = useState(false);
+  const [purchasedSubscription, setPurchasedSubscription] = useState(null);
   const timerRef = useRef(null);
 
   /* ── derived count ── */
@@ -102,12 +103,19 @@ export function CartProvider({ children }) {
   const openCart  = useCallback(() => setIsCartOpen(true),  []);
   const closeCart = useCallback(() => setIsCartOpen(false), []);
 
+  /* ── complete purchase: mark the subscription in the cart as purchased ── */
+  const completePurchase = useCallback(() => {
+    const sub = cartItems.find(i => i.type === 'subscription');
+    if (sub) setPurchasedSubscription({ planType: sub.planType ?? null, purchasedAt: new Date() });
+  }, [cartItems]);
+
   return (
     <CartContext.Provider value={{
       toast, showToast, hideToast,
       cartItems, cartCount,
       updateQty, removeFromCart,
       isCartOpen, openCart, closeCart,
+      purchasedSubscription, completePurchase,
     }}>
       {children}
     </CartContext.Provider>

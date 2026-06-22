@@ -4,15 +4,8 @@ import { useHeroSection } from '../../hooks/useHeroSection';
 import { CardTag, CardStat, StatNum, StatUnit, CardDivider, GlassPanel } from '../shared/CardPrimitives';
 
 // ── Primary visuals ────────────────────────────────────────────────────────
-import imgBg        from '../../assets/hero/bg.png';
-import imgPhone     from '../../assets/hero/hero-phone.png';
 import imgTitleFill from '../../assets/hero/total-care-text.png';
 import imgQr        from '../../assets/hero/qr-code.png';
-
-// ── Card imagery ───────────────────────────────────────────────────────────
-import imgProfile from '../../assets/hero/card-profile.png';
-import imgDevices from '../../assets/hero/card-devices.png';
-import imgFood    from '../../assets/hero/card-food.png';
 
 // ── Card icons ─────────────────────────────────────────────────────────────
 import icoRx        from '../../assets/hero/icons/ico-rx.svg';
@@ -407,7 +400,7 @@ function MobileRecordsCard() {
  * Breakfast tab strip + Poha food card with half-moon image crop.
  * animDelay=150 ms — second group to appear.
  */
-function MobileNutritionSection() {
+function MobileNutritionSection({ foodImageUrl }) {
   const anim = 'mobileCardSlideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) 150ms both';
   return (
     <>
@@ -463,7 +456,7 @@ function MobileNutritionSection() {
           }}
         >
           <img
-            src={imgFood}
+            src={foodImageUrl}
             alt="Poha"
             className="absolute object-cover"
             style={{ width: '106.16%', height: '128.36%', left: '-5.97%', top: '-37.52%' }}
@@ -491,7 +484,7 @@ function MobileNutritionSection() {
  * Reduced ~20 % from original Figma values for better visibility.
  * animDelay=300 ms — third group to appear.
  */
-function MobileHealthSyncCard() {
+function MobileHealthSyncCard({ profileImageUrl }) {
   return (
     <div
       className="absolute flex flex-col gap-[3px] items-center"
@@ -506,7 +499,7 @@ function MobileHealthSyncCard() {
         style={{ width: '65px', height: '67px' }}
       >
         <img
-          src={imgProfile}
+          src={profileImageUrl}
           alt=""
           aria-hidden
           className="absolute object-cover"
@@ -535,7 +528,7 @@ function MobileHealthSyncCard() {
  * within the 510 px design-height canvas.
  * animDelay=450 ms — last card to appear (bottom-most).
  */
-function MobileHealthDevicesCard() {
+function MobileHealthDevicesCard({ devicesImageUrl }) {
   return (
     <div
       className="absolute flex flex-col gap-[4px] items-center"
@@ -546,7 +539,7 @@ function MobileHealthDevicesCard() {
     >
       {/* Devices image — natural aspect ratio, 88 px wide, full image visible */}
       <img
-        src={imgDevices}
+        src={devicesImageUrl}
         alt=""
         aria-hidden
         className="shrink-0 object-contain"
@@ -609,7 +602,7 @@ export default function HeroSection() {
 
       {/* ── Full-bleed background ── */}
       <img
-        src={imgBg}
+        src={hero.bgImageUrl}
         alt="" aria-hidden
         className="absolute inset-0 w-full h-full object-cover object-top pointer-events-none"
       />
@@ -636,7 +629,7 @@ export default function HeroSection() {
           >
             {/* Phone mockup */}
             <img
-              src={imgPhone}
+              src={hero.phoneImageUrl}
               alt="Total Care mobile app"
               className="absolute object-contain object-bottom pointer-events-none"
               style={{ left: '320px', top: '69.55px', width: '680.762px', height: '984.192px' }}
@@ -706,7 +699,7 @@ export default function HeroSection() {
               style={{ left: '127px', top: '175px', width: '275px', height: '397px', zIndex: 1 }}
             >
               <img
-                src={imgPhone}
+                src={hero.phoneImageUrl}
                 alt="Total Care mobile app"
                 className="w-full h-full object-cover"
               />
@@ -715,9 +708,9 @@ export default function HeroSection() {
             {/* Floating overlay cards — z-index 2 */}
             <div className="absolute inset-0" style={{ zIndex: 2 }}>
               <MobileRecordsCard />
-              <MobileNutritionSection />
-              <MobileHealthSyncCard />
-              <MobileHealthDevicesCard />
+              <MobileNutritionSection foodImageUrl={hero.nutritionFoodImageUrl} />
+              <MobileHealthSyncCard profileImageUrl={hero.healthSyncProfileImageUrl} />
+              <MobileHealthDevicesCard devicesImageUrl={hero.healthDevicesImageUrl} />
             </div>
           </div>
         </div>

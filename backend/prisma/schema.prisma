@@ -839,6 +839,10 @@ model HeroSectionConfig {
   healthDevicesDescription String  @default("Save more, same care at low cost") @map("health_devices_description")
   healthDevicesImageUrl    String? @map("health_devices_image_url")
 
+  // Hero background & phone image
+  bgImageUrl    String? @map("bg_image_url")
+  phoneImageUrl String? @map("phone_image_url")
+
   isActive Boolean @default(true) @map("is_active")
 
   @@map("hero_section_config")

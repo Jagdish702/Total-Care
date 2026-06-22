@@ -283,7 +283,7 @@ function PriceBreakdown({ items, discount }) {
 export default function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cartItems } = useCart();
+  const { cartItems, completePurchase } = useCart();
 
   const [selectedPayment, setSelectedPayment] = useState('upi');
   const [appliedDiscount, setAppliedDiscount] = useState(null);
@@ -496,6 +496,7 @@ export default function PaymentPage() {
               {/* Complete Order button — full width on both mobile and desktop */}
               <button
                 type="button"
+                onClick={completePurchase}
                 className="flex items-center justify-center gap-[8px] h-[48px] w-full rounded-[12px] relative hover:brightness-110 active:scale-[0.98] transition-all"
                 style={{
                   background: '#004172',

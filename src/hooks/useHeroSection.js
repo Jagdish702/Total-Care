@@ -27,6 +27,8 @@ const FALLBACK = {
   healthDevicesTitle:        'Health Devices',
   healthDevicesDescription:  'Save more, same care at low cost',
   healthDevicesImageUrl:     null,
+  bgImageUrl:                null,
+  phoneImageUrl:             null,
 };
 
 export function useHeroSection() {

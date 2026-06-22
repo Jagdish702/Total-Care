@@ -121,7 +121,8 @@
       "Bash(node prisma/seed-section-images.js)",
       "Bash(Get-ChildItem -Path \"src/components\", \"src/services\", \"src/hooks\" -Recurse -File)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\" -Recurse -Filter \"*hero*\" -ErrorAction SilentlyContinue)",
-      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\\\\src\\\\controllers\" -Filter \"*demo*\" -ErrorAction SilentlyContinue)"
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\HP\\\\Desktop\\\\Final Total Care Store Front\\\\backend\\\\src\\\\controllers\" -Filter \"*demo*\" -ErrorAction SilentlyContinue)",
+      "PowerShell($proc = Get-NetTCPConnection -LocalPort 5173 -ErrorAction SilentlyContinue | Select-Object -First 1; if \\($proc\\) { Stop-Process -Id $proc.OwningProcess -Force; \"Killed PID $\\($proc.OwningProcess\\)\" } else { \"Port 5173 is free\" })"
     ]
   }
 }
